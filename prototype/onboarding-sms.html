@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДоНуля — SMS-подтверждение согласия</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+  :root{--red:#B43E41;--ink:#1C1C1C;--grey:#979797;--line:#ECECEC;--bg:#F6F4F1;--soft:#F6E7E7;--screen:#F8F8F8}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Manrope',sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .crumb{position:relative;z-index:1;font-size:12px;color:var(--grey);margin-bottom:16px}
+  .crumb a{color:var(--red);text-decoration:none}
+  .phone{position:relative;z-index:1;width:392px;max-width:100%;background:#1C1C1C;border-radius:42px;padding:10px;box-shadow:0 20px 60px rgba(28,28,28,.18)}
+  .screen{background:var(--screen);border-radius:32px;overflow:hidden}
+  .pad{padding:26px 24px 28px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .brandlogo{height:27px;width:auto;display:block}
+  .chip-role{font-size:11px;font-weight:700;color:var(--red);background:var(--soft);padding:6px 11px;border-radius:99px}
+  .back{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--grey);text-decoration:none;margin:16px 0 18px}
+  .back svg{stroke:var(--grey)}
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:28px;line-height:1.16;margin:0 0 10px}
+  .lead{font-size:14px;line-height:1.55;color:#6b6b6b;margin:0 0 6px}
+  .lead b{color:var(--ink);font-weight:700}
+  /* OTP */
+  .otp{display:flex;gap:11px;justify-content:center;margin:26px 0 14px}
+  .otp .d{width:60px;height:68px;border:2px solid #E4DFDF;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--ink)}
+  .otp .d.filled{border-color:#D2CACA}
+  .otp .d.active{border-color:var(--red)}
+  .otp .d.active::after{content:'';width:2px;height:30px;background:var(--red);animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .resend{text-align:center;font-size:13px;color:var(--grey);margin:0 0 22px}
+  .resend b{color:#c9c4c4;font-weight:600}
+  /* согласие */
+  .consent{background:#fff;border:1px solid #ECE7E7;border-radius:16px;padding:6px 16px 8px;margin:0 0 14px}
+  .consent .cap{font-size:12px;font-weight:700;color:var(--grey);padding:13px 0 4px}
+  .doc{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-top:1px solid #F2EEEE}
+  .doc:first-of-type{border-top:none}
+  .doc .ic{flex:none;width:34px;height:34px;border-radius:10px;background:var(--soft);display:flex;align-items:center;justify-content:center}
+  .doc .ic svg{stroke:var(--red)}
+  .doc .body{flex:1;min-width:0}
+  .doc .t{font-size:14px;font-weight:700;line-height:1.25}
+  .doc .s{font-size:12px;color:#8a8a8a;margin-top:3px;line-height:1.4}
+  .doc .read{flex:none;align-self:center;font-size:12.5px;font-weight:700;color:var(--red);text-decoration:none;white-space:nowrap}
+  .accept{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:#6b6b6b;line-height:1.45;margin:0 0 22px;padding:0 2px}
+  .accept svg{flex:none;margin-top:1px;stroke:var(--red)}
+  .cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--red);color:#fff;border:none;border-radius:16px;padding:16px;font-family:'Manrope',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}
+  .cta:active{transform:scale(.99)}
+  .note{text-align:center;font-size:11px;color:#a8a8a8;margin-top:11px;line-height:1.5}
+</style>
+</head>
+<body>
+  <div class="crumb"><a href="welcome.html">← к велкому</a> · SMS-подтверждение согласия (S1, шаг 3) · решение 33</div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="pad">
+
+        <div class="top">
+          <img class="brandlogo" src="../assets/brand/logo.svg" alt="ДоНуля">
+          <span class="chip-role">Допуск клоузера</span>
+        </div>
+
+        <a class="back" href="welcome.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> изменить номер</a>
+
+        <h1>Подтверди номер</h1>
+        <p class="lead">Отправили код на <b>+7 (932) •••‑••‑17</b>.</p>
+        <p class="lead">Введи его — этим ты подтверждаешь номер и согласие.</p>
+
+        <div class="otp">
+          <div class="d filled">8</div>
+          <div class="d filled">3</div>
+          <div class="d active"></div>
+          <div class="d"></div>
+        </div>
+        <div class="resend">Отправить код повторно через <b>0:42</b></div>
+
+        <div class="consent">
+          <div class="cap">Вводя код, ты принимаешь два документа:</div>
+          <div class="doc">
+            <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 16h6"/></svg></div>
+            <div class="body">
+              <div class="t">Согласие на обработку ПДн</div>
+              <div class="s">запись голоса и AI-оценка, в т.ч. обработка голоса в OpenAI Realtime (США)</div>
+            </div>
+            <a class="read" href="#">Читать</a>
+          </div>
+          <div class="doc">
+            <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9.5 12l2 2 3.5-4"/></svg></div>
+            <div class="body">
+              <div class="t">NDA — соглашение о неразглашении</div>
+              <div class="s">конфиденциальность скриптов, цен и материалов компании</div>
+            </div>
+            <a class="read" href="#">Читать</a>
+          </div>
+        </div>
+
+        <div class="accept">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l5 5 9-11"/></svg>
+          <div>SMS-код = простая электронная подпись акцепта. Подтверждая, ты соглашаешься с обоими документами.</div>
+        </div>
+
+        <a class="cta" href="trainee.html">Подтвердить <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+        <div class="note">ст. 9 63-ФЗ «Об электронной подписи» · 152-ФЗ · решение 33</div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

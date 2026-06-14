@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДоНуля — Кабинет директора</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Medium.woff2') format('woff2');font-weight:500;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+  :root{
+    --red:#B43E41;--red-dark:#9A3336;--red-soft:#F9F2F3;--red-mid:#E09A9C;
+    --ink:#1C1C1C;--grey:#979797;--line:#ECECEC;--bg:#F6F4F1;--card:#fff;
+    --gold:#FFCF88;--gold-deep:#EABD7A;--gold-soft:#FBF3E4;--ok:#4CAF50;--ok-soft:#EAF6EB;
+    --shadow:0 1px 2px rgba(28,28,28,.04), 0 6px 20px rgba(28,28,28,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.02 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .top{position:sticky;top:0;z-index:50;background:rgba(246,244,241,.94);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:26px;padding:0 28px;height:60px}
+  .top img{height:26px}
+  .top .nav{display:flex;gap:2px;height:100%}
+  .top .nav button{font-family:'Manrope';font-size:13.5px;font-weight:600;color:var(--grey);background:none;border:none;cursor:pointer;
+    padding:0 14px;height:100%;border-bottom:2.5px solid transparent}
+  .top .nav button.on{color:var(--red);border-bottom-color:var(--red)}
+  .top .who{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600}
+  .top .ava{width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  main{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:28px 28px 80px}
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:30px;letter-spacing:.01em}
+  .sub{color:var(--grey);font-size:14px;margin-top:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+  .screen{display:none;animation:in .25s ease both}
+  .screen.active{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .btn{font-family:'Manrope';font-weight:700;font-size:13.5px;border:none;cursor:pointer;border-radius:11px;padding:11px 18px;transition:transform .06s, background .15s}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--red);color:#fff}
+  .btn.primary:hover{background:var(--red-dark)}
+  .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn.dark{background:var(--ink);color:#fff}
+  .btn.sm{padding:7px 12px;font-size:12px;border-radius:9px}
+  .rowbar{display:flex;align-items:center;gap:12px;margin:22px 0 6px}
+  .rowbar h2{font-family:'GuberniaTygra',serif;font-weight:400;font-size:20px}
+  .rowbar .sp{flex:1}
+  .hint{display:flex;gap:9px;align-items:flex-start;padding:12px 14px;border-radius:11px;background:var(--gold-soft);border:1px solid #f0ddb9;font-size:12.5px;line-height:1.5;color:#6e5424;margin-top:10px}
+  .hint svg{flex:none;width:16px;height:16px;stroke:#b08a3e;fill:none;stroke-width:2;margin-top:1px}
+
+  /* ── список уроков ── */
+  .lesson{display:flex;align-items:center;gap:13px;padding:13px 15px;margin-top:9px;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .12s}
+  .lesson:hover{border-color:var(--red-mid)}
+  .grip{flex:none;color:#cfcfcf;cursor:grab;font-size:17px;letter-spacing:-2px}
+  .lnum{flex:none;width:30px;height:30px;border-radius:9px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+  .lesson .li{flex:1;min-width:0}
+  .lesson .lt{font-size:14.5px;font-weight:700}
+  .lesson .lm{font-size:12px;color:var(--grey);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+  .tagi{display:inline-flex;align-items:center;gap:4px}
+  .tagi.has{color:#2c6b2f}
+  .lesson .acts{display:flex;gap:6px;flex:none}
+  .spine{margin-top:10px;padding:14px 15px;border:1px dashed var(--line);border-radius:13px;background:#FAF9F7}
+  .spine .sh{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.05em}
+  .spine .sh svg{width:14px;height:14px;stroke:var(--grey);fill:none;stroke-width:2}
+  .spine .steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .spine .st{font-size:12.5px;font-weight:600;color:#777;background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 13px}
+  .spine .note{font-size:11.5px;color:var(--grey);margin-top:9px}
+
+  /* ── редактор урока ── */
+  .editor{margin-top:10px;padding:18px;border:1.5px solid var(--red-mid);border-radius:14px;background:#fff;box-shadow:var(--shadow)}
+  .editor .eh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .editor .eh .lnum{width:34px;height:34px}
+  .editor .eh b{font-family:'GuberniaTygra',serif;font-weight:400;font-size:18px}
+  .f{margin-top:13px}
+  .f label{display:block;font-size:12px;font-weight:600;color:var(--grey);margin-bottom:6px}
+  .f input,.f textarea{width:100%;font-family:'Manrope';font-size:14px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;outline:none;resize:vertical}
+  .f input:focus,.f textarea:focus{border-color:var(--red-mid)}
+  .videos{display:flex;flex-direction:column;gap:8px}
+  .vid{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#FBFAF8;font-size:13px}
+  .vid svg{flex:none;width:18px;height:18px;fill:var(--red)}
+  .vid .vu{flex:1;color:#444;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vid .x{color:var(--grey);cursor:pointer;font-weight:700}
+  .addvid{display:flex;gap:8px;margin-top:8px}
+  .addvid input{flex:1}
+  .quiz-mini{margin-top:8px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:#FBFAF8;font-size:13px}
+  .quiz-mini .q{font-weight:600;margin-bottom:5px}
+  .quiz-mini .o{color:#555;padding:2px 0}
+  .quiz-mini .o.ok{color:#2c6b2f;font-weight:600}
+  .esave{display:flex;gap:9px;margin-top:16px}
+
+  /* ── тест / сценарии / цены ── */
+  table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);font-size:13.5px}
+  thead th{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--grey);text-align:left;padding:12px 15px;border-bottom:1px solid var(--line);background:#FBFAF8}
+  tbody td{padding:12px 15px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:last-child td{border:none}
+  .bk{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--red-soft);color:var(--red);white-space:nowrap}
+  .scn{display:flex;gap:13px;align-items:center;padding:14px 16px;margin-top:10px}
+  .scn .sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;font-family:'GuberniaTygra',serif;font-size:19px}
+  .scn.train .sn{background:var(--gold-soft);color:#9a7424}
+  .scn .si{flex:1;min-width:0}
+  .scn .st2{font-size:14.5px;font-weight:700}
+  .scn .sd{font-size:12px;color:var(--grey);margin-top:2px}
+  .prod{font-size:10px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:6px;margin-left:6px}
+  .prod.bfl{background:var(--ink);color:#fff}.prod.rdg{background:var(--gold);color:#5d4413}
+  .fromcall{margin-top:14px;padding:18px;border-radius:14px;background:linear-gradient(150deg,#fff,var(--gold-soft));border:1px solid #f0ddb9}
+  .fromcall h3{font-family:'GuberniaTygra',serif;font-weight:400;font-size:18px;margin-bottom:5px}
+  .fromcall p{font-size:13px;color:#6e5424;line-height:1.5;margin-bottom:12px}
+  .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+  .price-grid .f{margin:0}
+  @media(max-width:640px){.price-grid{grid-template-columns:1fr}}
+  .soon-tab{text-align:center;padding:50px 20px;color:var(--grey)}
+  .soon-tab .ic{width:54px;height:54px;border-radius:50%;background:var(--gold-soft);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
+  .soon-tab h2{font-family:'GuberniaTygra',serif;font-weight:400;font-size:22px;color:var(--ink)}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  .kpi .b{padding:16px;text-align:center}
+  .kpi .n{font-family:'GuberniaTygra',serif;font-size:30px}
+  .kpi .l{font-size:11.5px;color:var(--grey);font-weight:600;margin-top:4px}
+  /* рубрика-редактор */
+  .crit{display:flex;align-items:center;gap:12px;padding:12px 15px;margin-top:9px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  .crit.locked{background:#FAF9F7;border-style:dashed}
+  .crit .ci{flex:1;min-width:0}
+  .crit .ct{font-size:14px;font-weight:700}
+  .crit .cm{font-size:12px;color:var(--grey);margin-top:2px}
+  .ctype{font-size:10px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:6px;margin-right:7px;vertical-align:1px}
+  .ctype.fail{background:var(--red);color:#fff}
+  .ctype.skill{background:var(--red-soft);color:var(--red)}
+  .ctype.deliv{background:var(--gold-soft);color:#9a7424}
+  .ctype.craft{background:#eef2f4;color:#3d6070}
+  .crit-group{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--grey);margin:16px 0 2px}
+  .qtab{font-size:13px}
+  .qtab th{font-size:10.5px;white-space:nowrap}
+  .qtab td{text-align:center;font-weight:700}
+  .qtab td.nm{text-align:left;font-weight:600;white-space:nowrap}
+  .sc.g{color:#2c8a3d}.sc.y{color:#b8860b}.sc.r{color:var(--red)}
+  .ovr{display:inline-block;min-width:46px;padding:4px 8px;border-radius:8px;font-weight:800}
+  .ovr.g{background:#dff3e2;color:#2c6b2f}.ovr.y{background:#fbf1d8;color:#8a6320}.ovr.r{background:#f7dcdd;color:var(--red)}
+  .risk{color:var(--red);font-weight:800}
+  .ava-mini{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-right:8px;vertical-align:-6px}
+  .lockico{font-size:13px;color:var(--grey)}
+  .calib{padding:16px 18px;margin-top:14px}
+  .calib .bar{height:9px;background:var(--line);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+  .calib .bar i{display:block;height:100%;background:var(--ok);border-radius:99px}
+  .signal{display:flex;align-items:center;gap:11px;padding:11px 14px;margin-top:8px;border:1px solid var(--line);border-radius:11px;font-size:13px}
+  .signal .cnt{flex:none;width:30px;height:30px;border-radius:8px;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+  .signal .sx{flex:1}
+  .lock-note{display:flex;gap:9px;align-items:flex-start;padding:12px 14px;border-radius:11px;background:#F4F2EE;border:1px dashed #cfc8bd;font-size:12.5px;line-height:1.5;color:#6b6359;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <img src="../assets/brand/logo.svg" alt="ДоНуля">
+  <div class="nav">
+    <button class="on" data-s="d1" onclick="nav(this)">Обучение</button>
+    <button data-s="d2" onclick="nav(this)">Тест</button>
+    <button data-s="d3" onclick="nav(this)">Сценарии</button>
+    <button data-s="d4" onclick="nav(this)">Цены и тексты</button>
+    <button data-s="d5" onclick="nav(this)">Качество AI</button>
+    <button data-s="d6" onclick="nav(this)">Стажёры</button>
+  </div>
+  <div class="who"><span>Артём · Директор</span><div class="ava">Д</div></div>
+</div>
+
+<main>
+
+  <!-- ════ D1 ОБУЧЕНИЕ ════ -->
+  <section class="screen active" id="d1">
+    <h1>Программа обучения</h1>
+    <p class="sub">Учебные шаги — ваши: добавляйте, убирайте, меняйте порядок, правьте текст и видео. Сертификационный костяк фиксирован.</p>
+
+    <div class="rowbar">
+      <h2>Учебные шаги</h2>
+      <span class="sp"></span>
+      <button class="btn primary sm" onclick="alert('Прототип: форма нового урока (название, текст, видео, мини-квиз)')">+ Добавить урок</button>
+    </div>
+
+    <div class="lesson" onclick="toggleEditor()">
+      <span class="grip">⋮⋮</span><span class="lnum">1</span>
+      <div class="li"><div class="lt">О компании и работе клоузера</div>
+        <div class="lm"><span>15 мин</span><span class="tagi has">▶ видео</span><span class="tagi has">✓ мини-квиз</span></div></div>
+      <div class="acts"><button class="btn ghost sm">Править</button></div>
+    </div>
+    <div class="lesson"><span class="grip">⋮⋮</span><span class="lnum">2</span>
+      <div class="li"><div class="lt">Продукт: БФЛ и РДГ <span style="font-weight:500;color:var(--grey);font-size:12px">· безопасная SIM</span></div>
+        <div class="lm"><span>10 мин</span><span class="tagi has">▶ видео</span><span class="tagi has">✓ мини-квиз</span></div></div>
+      <div class="acts"><button class="btn ghost sm">Править</button></div>
+    </div>
+
+    <!-- открытый редактор урока 3 -->
+    <div class="editor" id="lessonEditor">
+      <div class="eh"><span class="lnum">3</span><b>Лестница денег</b></div>
+      <div class="f"><label>Название шага</label><input value="Лестница денег"></div>
+      <div class="f"><label>Время (мин)</label><input value="10" style="max-width:120px"></div>
+      <div class="f"><label>Текст урока (markdown)</label>
+        <textarea rows="3">Клоузер никогда не торгуется вниз по цене — он спускается по лестнице форматов оплаты. Каждая ступень — это «да», которое можно взять сегодня: 99 000 → 15 000 → 2 000 → дата...</textarea></div>
+      <div class="f"><label>Ссылки на видео (можно несколько)</label>
+        <div class="videos">
+          <div class="vid"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span class="vu">https://kinescope.io/donulya/lestnica-razbor</span><span class="x">✕</span></div>
+          <div class="vid"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span class="vu">https://youtu.be/example-2000-fix</span><span class="x">✕</span></div>
+        </div>
+        <div class="addvid"><input placeholder="Вставьте ссылку YouTube / Kinescope / файл"><button class="btn dark sm">+ Видео</button></div>
+      </div>
+      <div class="f"><label>Мини-квиз (самопроверка в конце урока)</label>
+        <div class="quiz-mini">
+          <div class="q">Клиент отказался от 15 000 ₽. Что дальше?</div>
+          <div class="o ok">✓ Предложить частичную фиксацию 2 000 ₽</div>
+          <div class="o">Зафиксировать дату оплаты</div>
+          <div class="o">Отпустить подумать</div>
+        </div>
+        <button class="btn ghost sm" style="margin-top:8px">+ Вопрос мини-квиза</button>
+      </div>
+      <div class="esave">
+        <button class="btn primary" onclick="alert('Прототип: урок сохранён')">Сохранить</button>
+        <button class="btn ghost" onclick="toggleEditor()">Свернуть</button>
+        <span class="sp" style="flex:1"></span>
+        <button class="btn ghost sm" style="color:var(--red)">Выключить шаг</button>
+      </div>
+    </div>
+
+    <div class="lesson"><span class="grip">⋮⋮</span><span class="lnum">4</span>
+      <div class="li"><div class="lt">Скрипт и эталонные звонки</div>
+        <div class="lm"><span>20 мин</span><span class="tagi has">▶ видео</span><span class="tagi">мини-квиз</span></div></div>
+      <div class="acts"><button class="btn ghost sm">Править</button></div>
+    </div>
+    <div class="lesson"><span class="grip">⋮⋮</span><span class="lnum">5</span>
+      <div class="li"><div class="lt">Успешный звонок и ошибки</div>
+        <div class="lm"><span>10 мин</span><span class="tagi">видео</span><span class="tagi has">✓ мини-квиз</span></div></div>
+      <div class="acts"><button class="btn ghost sm">Править</button></div>
+    </div>
+    <div class="lesson"><span class="grip">⋮⋮</span><span class="lnum">6</span>
+      <div class="li"><div class="lt">Гарантия по договору</div>
+        <div class="lm"><span>5 мин</span><span class="tagi">видео</span><span class="tagi has">✓ мини-квиз</span></div></div>
+      <div class="acts"><button class="btn ghost sm">Править</button></div>
+    </div>
+
+    <div class="spine">
+      <div class="sh"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Сертификационный костяк — фиксирован</div>
+      <div class="steps">
+        <span class="st">🔒 Тест</span><span class="st">🔒 AI-симуляции</span><span class="st">🔒 Решение РОПа</span><span class="st">🔒 Первые звонки</span>
+      </div>
+      <div class="note">Эти шаги зашиты в логику допуска и скоринг — порядок не меняется и удалить нельзя. Менять костяк — продуктовое решение (через команду разработки).</div>
+    </div>
+
+    <div class="hint">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>Поток один — без версий программы. Карта стажёра рисует учебные шаги в этом порядке, затем — фиксированный костяк. В каждый шаг можно добавить текст и видео.</div>
+    </div>
+  </section>
+
+  <!-- ════ D2 ТЕСТ ════ -->
+  <section class="screen" id="d2">
+    <h1>Тест</h1>
+    <p class="sub">Пул вопросов. Стажёру выдаётся случайная выборка 20, проходной 80%. Пороги задаёт команда — не меняются здесь.</p>
+    <div class="rowbar"><h2>Вопросы</h2><span class="sp"></span>
+      <span style="font-size:13px;color:var(--grey);font-weight:600;margin-right:10px">36 активных · нужно 30–40</span>
+      <button class="btn primary sm" onclick="alert('Прототип: форма нового вопроса')">+ Вопрос</button></div>
+    <table>
+      <thead><tr><th>Вопрос</th><th>Блок</th><th>Статус</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>Клиент отказался от VIP 99 000 ₽. Что предлагаем следующим шагом?</td><td><span class="bk">Лестница</span></td><td style="color:#2c6b2f">активен</td><td><button class="btn ghost sm">Править</button></td></tr>
+        <tr><td>Что является результатом успешного звонка клоузера?</td><td><span class="bk">О компании</span></td><td style="color:#2c6b2f">активен</td><td><button class="btn ghost sm">Править</button></td></tr>
+        <tr><td>Когда правомерно ставить статус «Дата оплаты»?</td><td><span class="bk">Статусы</span></td><td style="color:#2c6b2f">активен</td><td><button class="btn ghost sm">Править</button></td></tr>
+        <tr><td>Чем БФЛ отличается от РДГ — кому что подходит?</td><td><span class="bk">Продукт</span></td><td style="color:#2c6b2f">активен</td><td><button class="btn ghost sm">Править</button></td></tr>
+        <tr><td>Как корректно ответить на «а вы гарантируете?»</td><td><span class="bk">Гарантия</span></td><td style="color:#2c6b2f">активен</td><td><button class="btn ghost sm">Править</button></td></tr>
+      </tbody>
+    </table>
+    <div class="hint"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>4 вопроса про условия работы заполнятся, когда пришлёте график и оплату — пока зарезервированы.</div></div>
+  </section>
+
+  <!-- ════ D3 СЦЕНАРИИ ════ -->
+  <section class="screen" id="d3">
+    <h1>Сценарии симулятора</h1>
+    <p class="sub">Персоны AI-клиента. Сам «мозг» симулятора (как судить, пороги) — на стороне разработки; вы ведёте сценарии и их содержание.</p>
+
+    <div class="fromcall">
+      <h3>🎤 Сделать сценарий из реального звонка</h3>
+      <p>Выберите запись хорошего или провального звонка — AI разберёт его и нарисует черновик персоны (имя, долг, характер, возражения). Вам останется поправить и сохранить. 2 минуты вместо написания с нуля.</p>
+      <button class="btn dark" onclick="alert('Прототип: выбор звонка → AI-черновик персоны → правка')">Выбрать звонок →</button>
+    </div>
+
+    <div class="rowbar"><h2>Зачётные (5 типов)</h2></div>
+    <div class="card scn"><div class="sn">1</div><div class="si"><div class="st2">«Дорого» <span class="prod bfl">БФЛ</span></div><div class="sd">12 вариаций · база: сделка 06</div></div><button class="btn ghost sm">Править</button></div>
+    <div class="card scn"><div class="sn">2</div><div class="si"><div class="st2">«Нет денег» <span class="prod rdg">РДГ</span></div><div class="sd">9 вариаций · база: сделка 04</div></div><button class="btn ghost sm">Править</button></div>
+    <div class="card scn"><div class="sn">3</div><div class="si"><div class="st2">«Надо с женой» <span class="prod rdg">РДГ</span></div><div class="sd">8 вариаций · база: сделка 01</div></div><button class="btn ghost sm">Править</button></div>
+    <div class="card scn"><div class="sn">4</div><div class="si"><div class="st2">«Боюсь банкротства» <span class="prod bfl">БФЛ</span></div><div class="sd">10 вариаций · база: сделка 05</div></div><button class="btn ghost sm">Править</button></div>
+    <div class="card scn"><div class="sn">5</div><div class="si"><div class="st2">«Готов, но не сейчас» <span class="prod bfl">любой</span></div><div class="sd">7 вариаций</div></div><button class="btn ghost sm">Править</button></div>
+
+    <div class="rowbar"><h2>Тренировочные (не в зачёт)</h2></div>
+    <div class="card scn train"><div class="sn">6</div><div class="si"><div class="st2">«Боюсь коллекторов» <span class="prod rdg">РДГ</span></div><div class="sd">цель: предложить безопасную SIM · база: сделка 04</div></div><button class="btn ghost sm">Править</button></div>
+    <div class="card scn train"><div class="sn">7</div><div class="si"><div class="st2">«Я предприниматель» <span class="prod rdg">РДГ</span></div><div class="sd">ИП на маркетплейсах · база: сделка 02</div></div><button class="btn ghost sm">Править</button></div>
+  </section>
+
+  <!-- ════ D4 ЦЕНЫ И ТЕКСТЫ ════ -->
+  <section class="screen" id="d4">
+    <h1>Цены и тексты</h1>
+    <p class="sub">Меняете цифры здесь — они подставляются во все уроки, тест и рубрику. Разработчик не нужен.</p>
+    <div class="card" style="padding:20px;margin-top:16px">
+      <div class="rowbar" style="margin-top:0"><h2>Разовая оплата (VIP)</h2></div>
+      <div class="price-grid">
+        <div class="f"><label>VIP — оплата разом</label><input value="99 000 ₽"></div>
+        <div class="f"><label>Можно продать дороже платёжеспособному (макс. ориентир)</label><input value="до 150 000 ₽"></div>
+      </div>
+
+      <div class="rowbar"><h2>Рассрочка — тарифы РДГ</h2></div>
+      <div class="price-grid">
+        <div class="f"><label>Долг 250 000 – 500 000 ₽</label><input value="140 000 ₽"></div>
+        <div class="f"><label>Долг от 500 000 ₽</label><input value="170 000 ₽"></div>
+      </div>
+
+      <div class="rowbar"><h2>Рассрочка — тарифы БФЛ (по сумме долга)</h2></div>
+      <div class="price-grid">
+        <div class="f"><label>До 700 000 ₽</label><input value="170 000 ₽"></div>
+        <div class="f"><label>700 000 – 1 000 000 ₽</label><input value="200 000 ₽"></div>
+        <div class="f"><label>1 000 000 – 1 500 000 ₽</label><input value="240 000 ₽"></div>
+        <div class="f"><label>Свыше 1 500 000 ₽</label><input value="260 000 ₽"></div>
+      </div>
+
+      <div class="rowbar"><h2>Условия рассрочки и нижние ступени</h2></div>
+      <div class="price-grid">
+        <div class="f"><label>Срок рассрочки</label><input value="6 – 16 месяцев"></div>
+        <div class="f"><label>Сопровождение РДГ (после утверждения плана)</label><input value="5 000 ₽/мес"></div>
+        <div class="f"><label>Частичная фиксация</label><input value="2 000 ₽"></div>
+        <div class="f"><label>Дата оплаты — макс. дней</label><input value="14"></div>
+      </div>
+
+      <div class="hint" style="margin-top:14px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div>Полная сумма рассрочки — фиксированная по сумме долга. Срок (6–16 мес) влияет только на ежемесячный платёж, не на итог. Клоузер подбирает срок под доход клиента. Лестница: VIP 99 000 разом (клиенту дешевле всего) → рассрочка по тарифу → частичка 2 000 → дата. Судья проверяет поведение (предложил рассрочку, подобрал срок, взял первый взнос), а не точную сумму.</div></div>
+      <button class="btn primary" style="margin-top:16px" onclick="alert('Прототип: цены сохранены, подставятся при следующей сборке контента')">Сохранить цены</button>
+    </div>
+  </section>
+
+  <!-- ════ D5 КАЧЕСТВО AI ════ -->
+  <section class="screen" id="d5">
+    <h1>Качество AI</h1>
+    <p class="sub">Вы правите РУБРИКУ — что и как оценивает AI. «Мозг» оценки (как считается вердикт) и число критичных ошибок зашиты в систему. Любая правка проходит проверку на эталонных звонках перед публикацией.</p>
+    <div class="kpi">
+      <div class="card b"><div class="n" style="color:var(--ok)">92%</div><div class="l">совпадение AI и РОПа</div></div>
+      <div class="card b"><div class="n">38</div><div class="l">размеченных звонков в эталоне</div></div>
+      <div class="card b"><div class="n" style="color:var(--red)">4%</div><div class="l">отменённых вердиктов</div></div>
+    </div>
+
+    <div class="rowbar"><h2>Редактор рубрики</h2><span class="sp"></span>
+      <span style="font-size:12px;color:var(--grey);font-weight:600;margin-right:10px">версия 1.0 · опубликована</span>
+      <button class="btn primary sm" onclick="alert('Прототип: добавить навыковый критерий')">+ Критерий</button></div>
+
+    <div class="crit locked">
+      <span class="lockico">🔒</span>
+      <div class="ci"><div class="ct"><span class="ctype fail">AUTO-FAIL</span>Клиент готов платить → ссылка не отправлена</div>
+        <div class="cm">Критичная ошибка. Фиксировано системой — не редактируется (защита от расшатывания оценки).</div></div>
+    </div>
+    <div class="crit locked">
+      <span class="lockico">🔒</span>
+      <div class="ci"><div class="ct"><span class="ctype fail">AUTO-FAIL</span>Отпустил клиента без денег / даты / шага</div>
+        <div class="cm">Критичная ошибка. Фиксировано системой.</div></div>
+    </div>
+    <div class="crit-group">Слой 1 — Исход (первичен): лестница денег и следующий шаг</div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype skill">НАВЫК 0–5</span>Предложил рассрочку, подобрал срок, взял первый взнос</div>
+        <div class="cm">Применяется: клиент отказался от VIP. Активен в сценариях 1, 2.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка названия, описаний уровней 0–5, условия применения, активных сценариев')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype skill">НАВЫК 0–5</span>Зафиксировал следующий шаг · проговорил договор/КИ</div>
+        <div class="cm">Ядро исхода. Без подтверждённого шага звонок не засчитан.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype skill">НАВЫК 0–5</span>Предложил безопасную SIM при давлении коллекторов</div>
+        <div class="cm">Применяется: есть давление коллекторов. Активен в тренировочном «Боюсь коллекторов».</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+
+    <div class="crit-group">Слой 2 — Качество продажи (законы / этапы скрипта, вторичный слой)</div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype craft">ПРОДАЖИ</span>Контакт и программирование (rapport)</div>
+        <div class="cm">Вошёл в контакт, подхватил передачу от охотника, обозначил план, уверенный тон.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype craft">ПРОДАЖИ</span>Диагностика — выявил боль до презентации (discovery)</div>
+        <div class="cm">Задал вопросы, понял ситуацию клиента, прежде чем предлагать решение.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype craft">ПРОДАЖИ</span>Презентация на языке выгод (value_pitch)</div>
+        <div class="cm">Привязка к боли клиента, а не сухие условия/тариф.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype craft">ПРОДАЖИ</span>Отработка возражений: ≥2, присоединение, не спор (objection_handling)</div>
+        <div class="cm">Количество и качество. Заменяет прежний «2 отработки».</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype craft">ПРОДАЖИ</span>Ведёт разговор, держит инициативу (control)</div>
+        <div class="cm">Не плывёт за клиентом, доводит до следующего шага.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+    <div class="crit">
+      <div class="ci"><div class="ct"><span class="ctype deliv">ПОДАЧА</span>Ведёт диалог, не монолог; реагирует на клиента</div>
+        <div class="cm">Минусующий, против «тарахтит чек-лист роботом». Активен во всех сценариях.</div></div>
+      <button class="btn ghost sm" onclick="alert('Прототип: правка критерия')">Править</button>
+    </div>
+
+    <div class="lock-note">🔒 Зашито в систему и НЕ редактируется здесь: число критичных ошибок (auto-fail = 2), логика вычисления вердикта, модель и промпт судьи. Порядок оценки: сначала исход (слой 1), потом качество продажи по этапам скрипта (слой 2, смыслово, не дословно). Исход первичен — как у лидеров (Second Nature 70/30).</div>
+
+    <div class="card calib">
+      <div class="rowbar" style="margin-top:0"><h2>Калибровка</h2></div>
+      <div style="font-size:13.5px;color:#444">Совпадение текущей рубрики с разметкой РОПа на эталоне (38 звонков):</div>
+      <div class="bar"><i style="width:92%"></i></div>
+      <div style="font-size:12.5px;color:var(--grey)">92% совпадение · отлов критичных 100% · порог публикации: ≥80% и 100%</div>
+      <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn dark" onclick="alert('Прототип: прогон изменённой рубрики по эталонным звонкам')">Прогнать по эталону</button>
+        <button class="btn ghost" onclick="alert('Прототип: опубликовать новую версию — доступно только если прогон ≥80% и отлов критичных 100%')">Опубликовать версию</button>
+      </div>
+    </div>
+
+    <div class="rowbar"><h2>Сигналы от РОПа — где судья чаще ошибается</h2></div>
+    <p class="sim-sub" style="font-size:12.5px;color:var(--grey);margin:0 0 4px">Копятся из отмен вердиктов. Подсказывают, какой критерий поправить.</p>
+    <div class="signal"><span class="cnt">7</span><div class="sx"><b>«Судья не услышал шаг лестницы»</b> — критерий рассрочки</div><button class="btn ghost sm">Посмотреть</button></div>
+    <div class="signal"><span class="cnt">3</span><div class="sx"><b>«Ложный critical (ошибка распознавания)»</b> — отправка ссылки</div><button class="btn ghost sm">Посмотреть</button></div>
+    <div class="signal"><span class="cnt">2</span><div class="sx"><b>«Подача нормальная, судья придрался»</b> — монолог</div><button class="btn ghost sm">Посмотреть</button></div>
+
+    <div class="hint" style="margin-top:14px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>В MVP1 рубрику ведём мы (из ваших звонков), вы видите готовое. Редактор рубрики, прогон по эталону и загрузка звонков — MVP2.</div></div>
+  </section>
+
+  <!-- ════ D6 СТАЖЁРЫ (read-only обзор) ════ -->
+  <section class="screen" id="d6">
+    <h1>Стажёры</h1>
+    <p class="sub">Обзор для владельца: как идёт поток и форма по симулятору. Только просмотр — решения по людям (допуск, снятие) принимает РОП в своём кабинете.</p>
+    <div class="kpi">
+      <div class="card b"><div class="n">8</div><div class="l">на обучении / nesting</div></div>
+      <div class="card b"><div class="n" style="color:var(--ok)">73%</div><div class="l">доходят до допуска</div></div>
+      <div class="card b"><div class="n">6 / 8</div><div class="l">прошли разминку сегодня</div></div>
+    </div>
+    <table style="margin-top:16px">
+      <thead><tr><th>Стажёр</th><th>Статус</th><th>Тест</th><th>Симуляции</th><th>Разминка сегодня</th><th>Тренировок / нед</th></tr></thead>
+      <tbody>
+        <tr><td><b>Иван Костров</b></td><td>ждёт решения</td><td>85%</td><td>4 OK · 1 fix</td><td style="color:#2c6b2f">✓ OK</td><td>28</td></tr>
+        <tr><td><b>Алёна Ширяева</b></td><td>ждёт решения</td><td>95%</td><td>5 OK</td><td style="color:#2c6b2f">✓ OK</td><td>31</td></tr>
+        <tr><td><b>Сергей Голубев</b></td><td>на линии · ур.1</td><td>90%</td><td>4 OK · 1 fix</td><td style="color:var(--red)">✕ не прошёл</td><td>12</td></tr>
+        <tr><td><b>Марина Ли</b></td><td>симуляции</td><td>85%</td><td>1 OK · 1 fix</td><td style="color:var(--red)">✕ не прошёл</td><td>9</td></tr>
+        <tr><td><b>Денис Сафонов</b></td><td>critical на разборе</td><td>80%</td><td>1 OK · 1 critical</td><td style="color:var(--grey)">—</td><td>6</td></tr>
+        <tr><td><b>Павел Зимин</b></td><td>переобучение</td><td style="color:var(--red)">70%</td><td>—</td><td style="color:var(--grey)">—</td><td>3</td></tr>
+      </tbody>
+    </table>
+    <div class="rowbar"><h2>Детализация по этапам продаж</h2></div>
+    <p class="sim-sub" style="font-size:12.5px;color:var(--grey);margin:0 0 4px">Оценка каждого звонка по этапам скрипта (симуляции + реальные звонки, одна рубрика). Зелёный ≥80 · жёлтый 60–79 · красный &lt;60.</p>
+    <table class="qtab" style="margin-top:10px">
+      <thead><tr>
+        <th>Менеджер</th><th>Звонков</th><th>Общая</th>
+        <th>Привет&shy;ствие</th><th>Выявл. потр.</th><th>Усиление боли</th><th>Презен&shy;тация</th><th>Отраб. возраж.</th><th>Закры&shy;тие</th><th>Риски</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="nm"><span class="ava-mini" style="background:var(--gold-deep)">А</span>Алёна Ширяева</td><td>5</td><td><span class="ovr g">92</span></td><td class="sc g">95</td><td class="sc g">94</td><td class="sc g">88</td><td class="sc g">93</td><td class="sc g">90</td><td class="sc g">95</td><td>—</td></tr>
+        <tr><td class="nm"><span class="ava-mini" style="background:var(--red)">И</span>Иван Костров</td><td>4</td><td><span class="ovr g">86</span></td><td class="sc g">92</td><td class="sc g">90</td><td class="sc g">82</td><td class="sc g">88</td><td class="sc g">85</td><td class="sc g">80</td><td>—</td></tr>
+        <tr><td class="nm"><span class="ava-mini" style="background:#2c8a3d">С</span>Сергей Голубев</td><td>7</td><td><span class="ovr g">84</span></td><td class="sc g">96</td><td class="sc g">88</td><td class="sc y">70</td><td class="sc g">85</td><td class="sc g">90</td><td class="sc y">78</td><td><span class="risk">⚠ 1</span></td></tr>
+        <tr><td class="nm"><span class="ava-mini" style="background:#7a5ea8">М</span>Марина Ли</td><td>3</td><td><span class="ovr y">76</span></td><td class="sc g">88</td><td class="sc g">90</td><td class="sc y">65</td><td class="sc g">80</td><td class="sc y">72</td><td class="sc y">70</td><td><span class="risk">⚠ 1</span></td></tr>
+        <tr><td class="nm"><span class="ava-mini" style="background:#c98a3a">Д</span>Денис Сафонов</td><td>2</td><td><span class="ovr r">58</span></td><td class="sc g">80</td><td class="sc y">70</td><td class="sc r">45</td><td class="sc r">40</td><td class="sc r">55</td><td class="sc y">60</td><td><span class="risk">⚠ 2</span></td></tr>
+        <tr><td class="nm"><span class="ava-mini" style="background:#5a8fb0">П</span>Павел Зимин</td><td>1</td><td><span class="ovr r">52</span></td><td class="sc g">80</td><td class="sc r">40</td><td class="sc r">0</td><td class="sc r">0</td><td class="sc r">30</td><td class="sc r">40</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <div class="hint" style="margin-top:14px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>Колонки = этапы скрипта (рубрика Слой 2) + «Закрытие» = исход (Слой 1) + «Риски» = комплаенс-флаги. Видно, у кого какой этап проседает — основа для коучинга. Это зеркало для владельца, решения по людям — у РОПа.</div></div>
+  </section>
+
+</main>
+
+<script>
+  function nav(btn){
+    document.querySelectorAll('.top .nav button').forEach(b=>b.classList.toggle('on', b===btn));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(btn.dataset.s).classList.add('active');
+    window.scrollTo({top:0});
+  }
+  function toggleEditor(){
+    const e=document.getElementById('lessonEditor');
+    e.style.display = (e.style.display==='none') ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>

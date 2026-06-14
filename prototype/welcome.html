@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДоНуля — Велком-экран стажёра</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+  :root{--red:#B43E41;--ink:#1C1C1C;--grey:#979797;--line:#ECECEC;--bg:#F6F4F1;--soft:#F6E7E7;--screen:#F8F8F8}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Manrope',sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px;}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .crumb{position:relative;z-index:1;font-size:12px;color:var(--grey);margin-bottom:16px}
+  .crumb a{color:var(--red);text-decoration:none}
+  /* телефон */
+  .phone{position:relative;z-index:1;width:392px;max-width:100%;background:#1C1C1C;border-radius:42px;padding:10px;box-shadow:0 20px 60px rgba(28,28,28,.18)}
+  .screen{background:var(--screen);border-radius:32px;overflow:hidden}
+  .pad{padding:26px 24px 28px}
+  /* шапка */
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .brandlogo{height:27px;width:auto;display:block}
+  .chip-role{font-size:11px;font-weight:700;color:var(--red);background:var(--soft);padding:6px 11px;border-radius:99px}
+  /* герой */
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:30px;line-height:1.16;margin:0 0 10px}
+  .lead{font-size:14px;line-height:1.55;color:#6b6b6b;margin:0 0 24px}
+  .label{font-size:12px;font-weight:700;color:var(--grey);margin:0 0 14px;letter-spacing:.02em}
+  /* путь */
+  .path{position:relative;margin:0 0 24px}
+  .path::before{content:'';position:absolute;left:19px;top:20px;bottom:20px;width:2px;background:#E4DFDF}
+  .step{position:relative;display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+  .step:last-child{margin-bottom:0}
+  .num{z-index:1;flex:none;width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid var(--red);color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+  .step.active .num{background:var(--red);color:#fff}
+  .step .t{font-weight:600;font-size:15px;line-height:1.25}
+  .step .s{font-size:13px;color:#8a8a8a;margin-top:2px}
+  /* что понадобится */
+  .needs{display:flex;gap:8px;margin:0 0 20px}
+  .need{flex:1;background:#fff;border:1px solid #ECE7E7;border-radius:14px;padding:13px 6px;text-align:center}
+  .need svg{display:block;margin:0 auto 6px;stroke:var(--red)}
+  .need span{font-size:12px;font-weight:600}
+  /* мотивация */
+  .motiv{display:flex;gap:11px;align-items:center;background:var(--soft);border-radius:14px;padding:13px 15px;margin:0 0 22px}
+  .motiv svg{flex:none;stroke:var(--red)}
+  .motiv p{font-size:13px;line-height:1.45;color:#7a2f31}
+  /* cta */
+  .cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--red);color:#fff;border:none;border-radius:16px;padding:16px;font-family:'Manrope',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}
+  .cta:active{transform:scale(.99)}
+  .note{text-align:center;font-size:11px;color:#a8a8a8;margin-top:11px}
+</style>
+</head>
+<body>
+  <div class="crumb"><a href="index.html">← к прототипу</a> · Велком-экран стажёра (S1, шаг 1) · решение 33</div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="pad">
+
+        <div class="top">
+          <img class="brandlogo" src="../assets/brand/logo.svg" alt="ДоНуля">
+          <span class="chip-role">Допуск клоузера</span>
+        </div>
+
+        <h1>Добро пожаловать<br>в команду</h1>
+        <p class="lead">Короткий путь до первых звонков с клиентами. Большинство проходит за один день.</p>
+
+        <div class="label">Что тебя ждёт</div>
+        <div class="path">
+          <div class="step"><div class="num">1</div><div><div class="t">8 уроков теории</div><div class="s">продукт, клиент, скрипт, деньги</div></div></div>
+          <div class="step"><div class="num">2</div><div><div class="t">Тест знаний</div><div class="s">проходной балл 80%</div></div></div>
+          <div class="step active"><div class="num">3</div><div><div class="t">5 голосовых симуляций</div><div class="s">живой разговор с AI-клиентом</div></div></div>
+          <div class="step"><div class="num">4</div><div><div class="t">Решение руководителя</div><div class="s">допуск к линии</div></div></div>
+          <div class="step"><div class="num">5</div><div><div class="t">Первые звонки</div><div class="s">под контролем наставника</div></div></div>
+        </div>
+
+        <div class="needs">
+          <div class="need"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>≈3 часа</span></div>
+          <div class="need"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg><span>с телефона</span></div>
+          <div class="need"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/></svg><span>наушники, тихо</span></div>
+        </div>
+
+        <div class="motiv">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 7-7"/><path d="M17 5h4v4"/></svg>
+          <p>Выше уровень допуска — горячее лиды и больше дохода.</p>
+        </div>
+
+        <a class="cta" href="onboarding-sms.html">Начать <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+        <div class="note">Дальше — подтверждение согласия по SMS</div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДоНуля — Прототип сервиса допуска</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+  :root{--red:#B43E41;--ink:#1C1C1C;--grey:#979797;--line:#ECECEC;--bg:#F6F4F1;--gold:#FFCF88}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;color:var(--ink);background:var(--bg);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  }
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+  img.logo{height:46px;margin-bottom:26px;position:relative}
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:clamp(30px,5vw,44px);text-align:center;line-height:1.15;position:relative}
+  h1 em{font-style:normal;color:var(--red)}
+  p.sub{color:var(--grey);font-size:15px;margin-top:12px;text-align:center;max-width:430px;line-height:1.55;position:relative}
+  .cards{display:flex;gap:18px;margin-top:38px;flex-wrap:wrap;justify-content:center;position:relative}
+  a.card{
+    display:block;text-decoration:none;color:var(--ink);width:300px;background:#fff;
+    border:1px solid var(--line);border-radius:20px;padding:26px;
+    box-shadow:0 1px 2px rgba(28,28,28,.04),0 12px 36px rgba(28,28,28,.08);
+    transition:transform .15s ease, box-shadow .15s ease;position:relative;overflow:hidden;
+  }
+  a.card:hover{transform:translateY(-4px);box-shadow:0 2px 4px rgba(28,28,28,.05),0 20px 48px rgba(28,28,28,.13)}
+  a.card::after{content:'';position:absolute;left:0;top:0;height:4px;width:100%}
+  a.card.trainee::after{background:linear-gradient(90deg,var(--red),#E09A9C)}
+  a.card.admin::after{background:linear-gradient(90deg,#1C1C1C,#5a5a5a)}
+  a.card.director::after{background:linear-gradient(90deg,#EABD7A,#FFCF88)}
+  .tag{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
+  a.card h2{font-family:'GuberniaTygra',serif;font-weight:400;font-size:24px;margin-top:8px}
+  a.card p{font-size:13.5px;color:#555;line-height:1.55;margin-top:8px}
+  a.card .go{display:inline-block;margin-top:16px;font-weight:700;font-size:13.5px;color:var(--red)}
+  .hint{margin-top:34px;font-size:12px;color:var(--grey);text-align:center;position:relative;line-height:1.6}
+  .hint b{color:#6e5424;background:#FBF3E4;border:1px solid #f0ddb9;padding:2px 8px;border-radius:99px;font-size:11px}
+</style>
+</head>
+<body>
+  <img class="logo" src="../assets/brand/logo.svg" alt="ДоНуля">
+  <h1>Сервис допуска<br><em>стажёров-клоузеров</em></h1>
+  <p class="sub">Кликабельный прототип в фирменном стиле донуля.рф. Три роли — выберите, чьими глазами смотреть.</p>
+  <div class="cards">
+    <a class="card trainee" href="trainee.html">
+      <span class="tag">Стажёр · телефон+планшет</span>
+      <h2>Кабинет стажёра</h2>
+      <p>Регистрация по инвайту → дорожная карта → урок с видео и мини-квизом → тест → голосовая симуляция → самооценка → вердикт AI → «Потренировать это».</p>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="card admin" href="admin.html">
+      <span class="tag">РОП · desktop</span>
+      <h2>Админка РОПа</h2>
+      <p>Операции: воронка недели → «требует внимания» с SLA → таблица стажёров → карточка с вердиктами, compliance-пометкой и решениями о допуске → инвайты.</p>
+      <span class="go">Открыть →</span>
+    </a>
+    <a class="card director" href="director.html">
+      <span class="tag">Директор · desktop</span>
+      <h2>Кабинет директора</h2>
+      <p>Настройка: учебные шаги (добавить/убрать/порядок, текст+видео) → тест → сценарии и «сделать из звонка» → цены → качество AI. Костяк допуска фиксирован.</p>
+      <span class="go">Открыть →</span>
+    </a>
+  </div>
+  <div style="position:relative;margin-top:24px;font-size:13.5px;color:var(--grey);text-align:center">
+    Отдельные экраны:
+    <a href="welcome.html" style="color:var(--red);text-decoration:none;font-weight:700">Велком стажёра</a> ·
+    <a href="onboarding-sms.html" style="color:var(--red);text-decoration:none;font-weight:700">SMS-согласие</a> ·
+    <a href="lesson-demo.html" style="color:var(--red);text-decoration:none;font-weight:700">Урок-образец (обучение = канон)</a>
+  </div>
+  <p class="hint">Все данные — демонстрационные · Кабинет стажёра лучше смотреть в узком окне или с телефона<br><b>прототип не подключён к бэкенду</b></p>
+</body>
+</html>

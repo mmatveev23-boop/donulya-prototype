@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ДоНуля — Кабинет стажёра-клоузера</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Medium.woff2') format('woff2');font-weight:500;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+
+  :root{
+    --red:#B43E41; --red-dark:#9A3336; --red-soft:#F9F2F3; --red-mid:#E09A9C;
+    --ink:#1C1C1C; --grey:#979797; --line:#ECECEC;
+    --bg:#F6F4F1; --card:#FFFFFF;
+    --gold:#FFCF88; --gold-deep:#EABD7A; --gold-soft:#FBF3E4;
+    --ok:#4CAF50; --ok-soft:#EAF6EB;
+    --shadow:0 1px 2px rgba(28,28,28,.04), 0 8px 24px rgba(28,28,28,.07);
+    --r:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Manrope',sans-serif;color:var(--ink);background:#E9E5E0;
+    min-height:100vh;display:flex;justify-content:center;align-items:flex-start;
+  }
+  /* зерно поверх фона */
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  .phone{
+    position:relative;z-index:1;width:100%;max-width:412px;min-height:100vh;
+    background:var(--bg);display:flex;flex-direction:column;
+    box-shadow:0 0 0 1px rgba(28,28,28,.06), 0 24px 80px rgba(28,28,28,.18);
+  }
+  .appcol{display:flex;flex-direction:column;flex:1;min-width:0}
+  /* боковое меню — только планшет/десктоп */
+  .sidebar{display:none}
+  @media(min-width:480px) and (max-width:767px){
+    body{padding:28px 0}
+    .phone{min-height:calc(100vh - 56px);border-radius:36px;overflow:hidden}
+  }
+
+  /* ── шапка ── */
+  header{
+    position:sticky;top:0;z-index:50;background:rgba(246,244,241,.92);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;padding:14px 18px;
+  }
+  header img{height:26px;display:block}
+  header .spacer{flex:1}
+  .pill{
+    font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    padding:5px 10px;border-radius:99px;white-space:nowrap;
+  }
+  .pill.learn{background:var(--gold-soft);color:#8a6320;border:1px solid #f0ddb9}
+  .pill.adm{background:var(--ok-soft);color:#2c6b2f;border:1px solid #cfe8d1}
+
+  main{flex:1;padding:20px 18px 96px}
+
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:30px;line-height:1.12;letter-spacing:.01em}
+  h2{font-family:'GuberniaTygra',serif;font-weight:400;font-size:21px;line-height:1.2}
+  .sub{color:var(--grey);font-size:14px;line-height:1.5;margin-top:8px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    font-family:'Manrope';font-weight:700;font-size:15px;border:none;cursor:pointer;
+    border-radius:14px;padding:15px 18px;transition:transform .06s ease, background .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn:active{transform:scale(.985)}
+  .btn.primary{background:var(--red);color:#fff}
+  .btn.primary:hover{background:var(--red-dark)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .btn.gold{background:var(--gold);color:#5d4413}
+  .btn[disabled]{background:var(--line);color:var(--grey);cursor:not-allowed}
+
+  /* ── экраны ── */
+  .screen{display:none;animation:in .28s ease both}
+  .screen.active{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ── нижняя навигация ── */
+  nav.tabs{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:412px;z-index:60;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+    display:flex;padding:6px 8px calc(8px + env(safe-area-inset-bottom));
+  }
+  @media(min-width:480px){nav.tabs{bottom:28px;border-radius:0 0 36px 36px}}
+  nav.tabs button{
+    flex:1;background:none;border:none;cursor:pointer;font-family:'Manrope';font-size:10.5px;font-weight:600;
+    color:var(--grey);display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:12px;
+  }
+  nav.tabs button.on{color:var(--red)}
+  nav.tabs svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ── S1 регистрация ── */
+  .logo-big{height:40px;margin:18px 0 22px}
+  .field{margin-top:14px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--grey);margin-bottom:6px}
+  .field input{width:100%;font-family:'Manrope';font-size:15px;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;outline:none}
+  .field input:focus{border-color:var(--red-mid)}
+  .check{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;line-height:1.45;color:#444}
+  .check input{margin-top:2px;accent-color:var(--red);width:17px;height:17px;flex:none}
+  .check a{color:var(--red);font-weight:600;text-decoration:none}
+
+  /* ── S2 дорожная карта ── */
+  .status-card{padding:18px;background:linear-gradient(135deg,#fff 60%,var(--red-soft));overflow:hidden;position:relative}
+  .status-card .lvl{font-size:12px;color:var(--grey);font-weight:600;margin-top:3px}
+  .progress{height:8px;background:var(--line);border-radius:99px;margin-top:14px;overflow:hidden}
+  .progress i{display:block;height:100%;width:34%;background:linear-gradient(90deg,var(--red),var(--red-mid));border-radius:99px;transition:width .6s ease}
+  .progress-note{font-size:12px;color:var(--grey);margin-top:7px}
+  .terms-link{
+    display:flex;align-items:center;gap:10px;margin-top:14px;padding:13px 14px;border-radius:13px;
+    background:var(--gold-soft);border:1px solid #f0ddb9;cursor:pointer;font-size:13.5px;font-weight:600;color:#6e5424;
+  }
+  .terms-link svg{width:18px;height:18px;stroke:#b08a3e;fill:none;stroke-width:2;stroke-linecap:round}
+  .terms-link .arr{margin-left:auto;color:#b08a3e}
+
+  .road{margin-top:22px;position:relative}
+  .road::before{content:'';position:absolute;left:17px;top:14px;bottom:14px;width:2px;background:var(--line)}
+  .step{position:relative;display:flex;gap:14px;padding:11px 0;cursor:pointer}
+  .step .dot{
+    position:relative;z-index:1;flex:none;width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13.5px;
+    background:#fff;border:2px solid var(--line);color:var(--grey);
+  }
+  .step.done .dot{background:var(--ok);border-color:var(--ok);color:#fff;font-size:15px}
+  .step.now .dot{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 0 0 5px var(--red-soft)}
+  .step .info{flex:1;padding-top:2px;min-width:0}
+  .step .t{font-size:14.5px;font-weight:600}
+  .step .d{font-size:12px;color:var(--grey);margin-top:2px}
+  .step.locked{opacity:.45;cursor:default}
+  .step.now .t{color:var(--red)}
+  .step .badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:99px;margin-left:auto;align-self:center;flex:none}
+  .badge.ok{background:var(--ok-soft);color:#2c6b2f}
+  .badge.now{background:var(--red);color:#fff}
+
+  /* ── S3 урок ── */
+  .lesson-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.06em}
+  .lesson-video{position:relative;margin-top:16px;border-radius:14px;overflow:hidden;aspect-ratio:16/9;cursor:pointer;
+    background:linear-gradient(150deg,#2a2122,#1C1C1C);border:1px solid #3a3030;box-shadow:var(--shadow)}
+  .lesson-video .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .lesson-video .play span{width:58px;height:58px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(180,62,65,.5);transition:transform .15s}
+  .lesson-video:hover .play span{transform:scale(1.08)}
+  .lesson-video .play svg{width:22px;height:22px;fill:#fff;margin-left:3px}
+  .lesson-video .cap{position:absolute;left:0;right:0;bottom:0;padding:20px 14px 11px;font-size:12.5px;font-weight:600;color:#fff;
+    background:linear-gradient(transparent,rgba(0,0,0,.6))}
+  .lesson-video .dur{position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:6px}
+  .lesson-body{margin-top:14px;font-size:15px;line-height:1.62}
+  .lesson-body p{margin:0 0 12px}
+  .lesson-body strong{font-weight:700}
+  .ladder{margin:16px 0;display:flex;flex-direction:column;gap:8px}
+  .rung{
+    display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:13px;background:#fff;
+    border:1px solid var(--line);box-shadow:var(--shadow);
+  }
+  .rung b{font-family:'GuberniaTygra',serif;font-weight:400;font-size:19px;color:var(--red);white-space:nowrap}
+  .rung span{font-size:13px;color:#555;line-height:1.35}
+  .rung:nth-child(1){border-left:4px solid var(--red)}
+  .rung:nth-child(2){border-left:4px solid var(--red-mid)}
+  .rung:nth-child(3){border-left:4px solid var(--gold-deep)}
+  .rung:nth-child(4){border-left:4px solid var(--gold)}
+  .quiz{margin-top:22px;padding:16px;border-radius:var(--r);background:var(--red-soft);border:1px solid #efdadb}
+  .quiz h3{font-size:14px;font-weight:700;margin-bottom:4px}
+  .quiz .q{font-size:14px;margin-top:12px;font-weight:600}
+  .opts{margin-top:8px;display:flex;flex-direction:column;gap:7px}
+  .opt{
+    text-align:left;font-family:'Manrope';font-size:13.5px;padding:11px 13px;border-radius:11px;cursor:pointer;
+    background:#fff;border:1.5px solid var(--line);transition:all .15s;
+  }
+  .opt.right{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.wrong{border-color:var(--red);background:var(--red-soft);opacity:.7}
+  .timer-note{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--grey);margin-top:14px}
+
+  /* ── S4 тест ── */
+  .test-top{display:flex;justify-content:space-between;align-items:center}
+  .qcount{font-size:12.5px;font-weight:700;color:var(--grey)}
+  .tring{position:relative;width:46px;height:46px}
+  .tring svg{transform:rotate(-90deg)}
+  .tring circle{fill:none;stroke-width:4}
+  .tring .bgc{stroke:var(--line)}
+  .tring .fgc{stroke:var(--red);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+  .tring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .question{font-size:16.5px;font-weight:600;line-height:1.45;margin-top:18px}
+  .result-hero{text-align:center;padding:30px 18px}
+  .score{font-family:'GuberniaTygra',serif;font-size:64px;color:var(--ok);line-height:1}
+  .weak{margin-top:18px;text-align:left}
+  .weak .w{display:flex;justify-content:space-between;font-size:13.5px;padding:10px 0;border-bottom:1px solid var(--line)}
+
+  /* ── S5 симуляции ── */
+  .sim-card{padding:15px 16px;margin-top:12px;display:flex;gap:13px;align-items:center;cursor:pointer}
+  .sim-num{
+    flex:none;width:42px;height:42px;border-radius:13px;background:var(--red-soft);
+    display:flex;align-items:center;justify-content:center;font-family:'GuberniaTygra',serif;font-size:20px;color:var(--red);
+  }
+  .sim-info{flex:1;min-width:0}
+  .sim-info .t{font-size:14.5px;font-weight:700}
+  .sim-info .d{font-size:12px;color:var(--grey);margin-top:2px}
+  .prod{font-size:10px;font-weight:800;letter-spacing:.05em;padding:2.5px 7px;border-radius:6px;margin-left:7px;vertical-align:1px}
+  .prod.bfl{background:var(--ink);color:#fff}
+  .prod.rdg{background:var(--gold);color:#5d4413}
+  .rubric-link{display:block;text-align:center;font-size:13px;font-weight:600;color:var(--red);margin-top:16px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  .sim-var{font-size:11px;color:var(--red);font-weight:700;background:var(--red-soft);border-radius:6px;padding:2px 7px;margin-left:6px;white-space:nowrap}
+  .sim-section{font-family:'GuberniaTygra',serif;font-weight:400;font-size:18px;margin:26px 0 2px}
+  .sim-section + .sim-sub{font-size:12.5px;color:var(--grey);margin:0 0 6px}
+  .badge.train{background:var(--ink);color:#fff}
+  .badge.soon{background:var(--line);color:var(--grey)}
+  .lib-note{display:flex;gap:10px;align-items:flex-start;margin-top:16px;padding:13px 14px;border-radius:12px;background:var(--gold-soft);border:1px solid #f0ddb9;font-size:12.5px;line-height:1.5;color:#6e5424}
+  .lib-note svg{flex:none;width:17px;height:17px;stroke:#b08a3e;fill:none;stroke-width:2;margin-top:1px}
+
+  /* ── S6 симуляция ── */
+  .handoff{
+    border-radius:var(--r);overflow:hidden;border:1px solid #3a3a3a;
+    background:linear-gradient(160deg,#262626,#1C1C1C 70%);color:#fff;box-shadow:0 16px 40px rgba(28,28,28,.35);
+  }
+  .handoff .hh{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:rgba(255,255,255,.06);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+  .handoff .hh b{font-size:15px;letter-spacing:0;color:#fff;font-family:'GuberniaTygra',serif;font-weight:400}
+  .handoff .hb{padding:16px}
+  .handoff .row{display:flex;justify-content:space-between;gap:14px;padding:7.5px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:13.5px}
+  .handoff .row:last-child{border:none}
+  .handoff .row .k{color:#9a9a9a;flex:none}
+  .handoff .row .v{text-align:right;line-height:1.4}
+  .handoff .quote{margin-top:10px;padding:12px;border-radius:11px;background:rgba(255,207,136,.1);border:1px solid rgba(255,207,136,.25);font-size:13.5px;line-height:1.5;font-style:italic;color:#f4e3c5}
+  .countdown{font-family:'GuberniaTygra',serif;font-size:20px;color:var(--gold)}
+
+  .dialog{margin-top:14px;display:flex;flex-direction:column;gap:10px;min-height:180px}
+  .msg{max-width:84%;padding:11px 14px;border-radius:15px;font-size:14px;line-height:1.5;animation:in .3s ease both}
+  .msg.client{background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start}
+  .msg.me{background:var(--red);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+  .msg.event{align-self:center;background:var(--gold-soft);border:1px dashed var(--gold-deep);color:#6e5424;font-size:12px;font-weight:700;padding:7px 13px;border-radius:99px}
+  .talkbar{position:sticky;bottom:96px;margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .state-chip{font-size:12px;font-weight:700;color:var(--grey);background:#fff;border:1px solid var(--line);padding:6px 14px;border-radius:99px;box-shadow:var(--shadow)}
+  .state-chip.think i{display:inline-block;animation:blink 1.2s infinite}
+  @keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+  .ptt{
+    width:84px;height:84px;border-radius:50%;border:none;cursor:pointer;position:relative;
+    background:radial-gradient(circle at 32% 28%, #c95a5d, var(--red) 65%);color:#fff;
+    box-shadow:0 10px 28px rgba(180,62,65,.45);display:flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent;user-select:none;
+  }
+  .ptt svg{width:32px;height:32px;fill:#fff}
+  .ptt.rec{animation:pulse 1.1s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,62,65,.45)}100%{box-shadow:0 0 0 26px rgba(180,62,65,0)}}
+  .ptt-hint{font-size:11.5px;color:var(--grey);font-weight:600}
+  .simtools{display:flex;gap:8px;margin-top:6px;width:100%}
+  .simtools .btn{padding:11px;font-size:12.5px;border-radius:11px}
+  .sim-timer{position:absolute;top:0;right:0;font-size:12px;font-weight:700;color:var(--grey)}
+
+  /* ── S7 вердикт ── */
+  .verdict{
+    text-align:center;padding:26px 18px 22px;border-radius:var(--r);
+    background:linear-gradient(160deg,#fff, var(--gold-soft));border:1px solid #f0ddb9;
+  }
+  .vbadge{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14px;padding:9px 18px;border-radius:99px}
+  .vbadge.fix{background:var(--gold);color:#5d4413}
+  .vbadge.okv{background:var(--ok);color:#fff}
+  .crit-row{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .crit-row:last-child{border:none}
+  .cdot{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-top:1px}
+  .cdot.g{background:var(--ok-soft);color:#2c6b2f}
+  .cdot.y{background:var(--gold-soft);color:#9a7424;border:1px solid var(--gold-deep)}
+  .crit-row .t{font-size:14px;font-weight:700}
+  .crit-row .quote{
+    margin-top:7px;padding:10px 12px;border-left:3px solid var(--red-mid);background:var(--red-soft);
+    border-radius:0 10px 10px 0;font-size:13px;line-height:1.5;color:#5a4040;cursor:pointer;
+  }
+  .crit-row .quote .tc{font-weight:800;color:var(--red);font-size:11.5px;margin-right:6px}
+  .crit-row .rec{margin-top:7px;font-size:13px;color:#444;line-height:1.5}
+  .crit-row .rec b{color:var(--ok);font-size:12px}
+
+  /* ── S8 ошибки / S9 условия ── */
+  .err-item{padding:14px 16px;margin-top:11px}
+  .err-item .t{font-size:14px;font-weight:700}
+  .err-item .m{font-size:12.5px;color:var(--grey);margin-top:3px}
+  .terms-sec{padding:16px;margin-top:12px}
+  .terms-sec h3{font-family:'GuberniaTygra',serif;font-weight:400;font-size:17px;margin-bottom:8px}
+  .terms-sec p,.terms-sec li{font-size:14px;line-height:1.6;color:#3c3c3c}
+  .terms-sec ul{padding-left:18px}
+  .ph{display:inline-block;background:var(--gold-soft);border-bottom:2px dashed var(--gold-deep);padding:0 4px;border-radius:4px;font-weight:700}
+
+  .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--grey);cursor:pointer;margin-bottom:14px;background:none;border:none;font-family:'Manrope'}
+  .mt8{margin-top:8px}.mt14{margin-top:14px}.mt18{margin-top:18px}.mt22{margin-top:22px}
+  .note{font-size:12px;color:var(--grey);line-height:1.5;text-align:center;margin-top:12px}
+
+  /* ── самооценка перед вердиктом ── */
+  .self-card{padding:22px 18px}
+  .self-card h2{margin-bottom:4px}
+  .selfq{margin-top:18px}
+  .selfq .q{font-size:14.5px;font-weight:600;margin-bottom:9px}
+  .self-opts{display:flex;gap:8px}
+  .self-opts button{
+    flex:1;font-family:'Manrope';font-weight:600;font-size:13px;padding:11px 8px;border-radius:11px;cursor:pointer;
+    background:#fff;border:1.5px solid var(--line);color:#555;transition:all .12s;
+  }
+  .self-opts button.sel{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+  /* ── тренд было→стало ── */
+  .trend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;font-weight:700}
+  .trend .att{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:5px 11px;color:var(--grey)}
+  .trend .att .vb{width:16px;height:16px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
+  .trend .att .vb.fx{background:var(--gold-deep)}
+  .trend .att .vb.ok{background:var(--ok)}
+  .trend .att .vb.cr{background:var(--red)}
+  .trend .arr{color:var(--grey)}
+  .trend .att.cur{border-color:var(--ok);color:#2c6b2f}
+  /* ── самооценка vs AI на результате ── */
+  .self-vs{margin-top:14px;padding:14px 16px;border-radius:13px;background:var(--gold-soft);border:1px solid #f0ddb9}
+  .self-vs h3{font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#8a6320;margin-bottom:10px}
+  .self-vs .vsrow{display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0;border-top:1px solid #f0ddb9}
+  .self-vs .vsrow:first-of-type{border-top:none}
+  .self-vs .vsrow .lbl{flex:1;color:#3c3c3c}
+  .self-vs .tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .self-vs .tag.match{background:var(--ok-soft);color:#2c6b2f}
+  .self-vs .tag.miss{background:var(--red-soft);color:var(--red)}
+  /* ── кнопка «потренировать это» ── */
+  .btn.train{background:var(--ink);color:#fff}
+  .btn.train:hover{background:#000}
+  .train-mini{
+    display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-family:'Manrope';font-weight:700;font-size:12.5px;
+    background:var(--ink);color:#fff;border:none;border-radius:9px;padding:8px 13px;cursor:pointer;
+  }
+  .train-mini:hover{background:#000}
+  .train-mini svg{width:14px;height:14px;fill:#fff}
+
+  /* ════ ПЛАНШЕТНОЕ / ДЕСКТОПНОЕ ОКНО (в конце — перекрывает базовые правила) ════ */
+  @media(min-width:768px){
+    body{padding:32px;align-items:center}
+    .phone{
+      flex-direction:row;max-width:980px;width:100%;height:min(900px,90vh);
+      border-radius:28px;overflow:hidden;
+    }
+    header{display:none}
+    nav.tabs{display:none}
+    .appcol{overflow:hidden}
+    main{flex:1;overflow-y:auto;padding:34px 44px 44px}
+    .sidebar{
+      display:flex;flex-direction:column;flex:none;width:248px;
+      background:#fff;border-right:1px solid var(--line);padding:26px 18px 22px;
+    }
+    .side-logo{height:28px;align-self:flex-start;margin:0 8px 22px}
+    .side-pill{align-self:flex-start;margin:0 8px 20px}
+    .side-nav{display:flex;flex-direction:column;gap:4px}
+    .navbtn{
+      display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;
+      font-family:'Manrope';font-weight:600;font-size:14.5px;color:#555;
+      background:none;border:none;padding:12px 14px;border-radius:12px;transition:background .15s,color .15s;
+    }
+    .navbtn:hover{background:var(--bg)}
+    .navbtn.on{background:var(--red-soft);color:var(--red)}
+    .navbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .side-foot{margin-top:auto;font-size:11.5px;color:var(--grey);padding:0 8px;line-height:1.5}
+    .road{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px}
+    .road::before{display:none}
+    .step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);align-items:flex-start;min-width:0}
+    .step.locked{background:transparent;box-shadow:none;border:1px dashed var(--line)}
+    .step .info{min-width:0}
+    .step .badge{align-self:flex-start;margin-top:2px}
+    .talkbar{position:static!important;bottom:auto!important}
+    h1{font-size:34px}
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- боковое меню — планшет/десктоп -->
+  <aside class="sidebar">
+    <img class="side-logo" src="../assets/brand/logo.svg" alt="ДоНуля">
+    <span class="pill learn side-pill">Обучается</span>
+    <nav class="side-nav">
+      <button class="navbtn on" data-s="s2" onclick="go('s2')"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>Дорожная карта</button>
+      <button class="navbtn" data-s="s5" onclick="go('s5')"><svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4"/></svg>Симулятор</button>
+      <button class="navbtn" data-s="s8" onclick="go('s8')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Мои ошибки</button>
+      <button class="navbtn" data-s="s9" onclick="go('s9')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Мои условия</button>
+    </nav>
+    <div class="side-foot">Прототип · демо-данные<br>не подключён к бэкенду</div>
+  </aside>
+
+  <div class="appcol">
+  <header>
+    <img src="../assets/brand/logo.svg" alt="ДоНуля">
+    <div class="spacer"></div>
+    <span class="pill learn" id="statusPill">Обучается</span>
+  </header>
+
+  <main>
+
+    <!-- ════ S1 РЕГИСТРАЦИЯ ════ -->
+    <section class="screen" id="s1">
+      <h1>Допуск к работе<br>клоузером «ДоНуля»</h1>
+      <p class="sub">Вас пригласили пройти допуск. Впереди ~3 часа: короткая теория, тест и разговоры с AI-клиентом. После — решение руководителя и первые реальные звонки.</p>
+      <div class="card mt18" style="padding:18px">
+        <div class="field"><label>Имя и фамилия</label><input value="Иван Костров"></div>
+        <div class="field"><label>Телефон</label><input value="+7 977 123-45-67" inputmode="tel"></div>
+        <div class="field"><label>Пароль (не короче 8 символов)</label><input type="password" placeholder="••••••••"></div>
+        <label class="check"><input type="checkbox" checked> Согласен на обработку персональных данных, запись голоса и AI-оценку — <a>документ</a></label>
+        <label class="check"><input type="checkbox" checked> Принимаю условия <a>соглашения о конфиденциальности</a></label>
+        <button class="btn primary mt18" onclick="go('s2')">Начать допуск</button>
+      </div>
+      <p class="note">Ссылка персональная и действует 7 дней</p>
+    </section>
+
+    <!-- ════ S2 ДОРОЖНАЯ КАРТА ════ -->
+    <section class="screen active" id="s2">
+      <div class="card status-card">
+        <h2>Иван, вы на пути к первым звонкам</h2>
+        <div class="lvl">Статус: обучение · Уровень допуска: 0</div>
+        <div class="progress"><i id="pbar"></i></div>
+        <div class="progress-note">3 из 10 шагов · идёте быстрее среднего</div>
+        <div class="terms-link" onclick="go('s9')">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          Мои условия: график, оплата, правила
+          <span class="arr">→</span>
+        </div>
+      </div>
+
+      <div class="road">
+        <div class="step done" onclick="go('s3')">
+          <div class="dot">✓</div>
+          <div class="info"><div class="t">О компании и работе клоузера</div><div class="d">15 мин · кто мы и как тут зарабатывают</div></div>
+          <span class="badge ok">готово</span>
+        </div>
+        <div class="step done" onclick="go('s3')">
+          <div class="dot">✓</div>
+          <div class="info"><div class="t">Продукт: БФЛ и РДГ</div><div class="d">10 мин · два продукта, кому что подходит</div></div>
+          <span class="badge ok">готово</span>
+        </div>
+        <div class="step now" onclick="go('s3')">
+          <div class="dot">3</div>
+          <div class="info"><div class="t">Лестница денег</div><div class="d">10 мин · 99 000 → 15 000 → 2 000 → дата</div></div>
+          <span class="badge now">сейчас</span>
+        </div>
+        <div class="step locked"><div class="dot">4</div><div class="info"><div class="t">Скрипт и эталонные звонки</div><div class="d">20 мин · этапы звонка + приём передачи</div></div></div>
+        <div class="step locked"><div class="dot">5</div><div class="info"><div class="t">Успешный звонок и ошибки</div><div class="d">10 мин · что считается результатом</div></div></div>
+        <div class="step locked"><div class="dot">6</div><div class="info"><div class="t">Гарантия по договору</div><div class="d">5 мин · как обещать правильно</div></div></div>
+        <div class="step locked" onclick="go('s4')"><div class="dot">7</div><div class="info"><div class="t">Тест</div><div class="d">20 вопросов · проходной 80%</div></div></div>
+        <div class="step locked" onclick="go('s5')"><div class="dot">8</div><div class="info"><div class="t">AI-симуляции</div><div class="d">5 разговоров · нужно 4 из 5</div></div></div>
+        <div class="step locked"><div class="dot">9</div><div class="info"><div class="t">Решение руководителя</div><div class="d">в течение 24 часов</div></div></div>
+        <div class="step locked"><div class="dot">10</div><div class="info"><div class="t">Первые звонки</div><div class="d">5–10 звонков под контролем</div></div></div>
+      </div>
+
+      <button class="btn primary mt18" onclick="go('s3')">Продолжить: Лестница денег</button>
+      <p class="note">Прототип: шаги кликабельны — пройдитесь по всем экранам</p>
+    </section>
+
+    <!-- ════ S3 УРОК ════ -->
+    <section class="screen" id="s3">
+      <button class="back" onclick="go('s2')">← Дорожная карта</button>
+      <div class="lesson-head">Блок 2 из 5 · 10 минут</div>
+      <h1 style="font-size:26px;margin-top:8px">Лестница денег</h1>
+      <div class="lesson-video" onclick="alert('Прототип: здесь проигрывается видео по ссылке, добавленной директором (YouTube / Kinescope / прямой файл).')">
+        <div class="dur">4:12</div>
+        <div class="play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></div>
+        <div class="cap">▶ Видео-разбор: как лучшие проходят лестницу на реальном звонке</div>
+      </div>
+      <div class="lesson-body mt14">
+        <p>Клоузер никогда не торгуется вниз по цене — он спускается <strong>по лестнице форматов оплаты</strong>. Каждая ступень — это «да», которое можно взять сегодня:</p>
+      </div>
+      <div class="ladder">
+        <div class="rung"><b>99 000 ₽</b><span>VIP — разовая оплата, максимум выгоды для клиента</span></div>
+        <div class="rung"><b>15 000 ₽</b><span>первый платёж рассрочки 160 000 ₽ — «начнём сегодня»</span></div>
+        <div class="rung"><b>2 000 ₽</b><span>частичная фиксация — бронируем условия и тариф</span></div>
+        <div class="rung"><b>Дата</b><span>точная дата оплаты — не дальше 14 дней, под день дохода</span></div>
+      </div>
+      <div class="lesson-body">
+        <p>Если клиент «думает» — выясняем причину, делаем минимум <strong>две отработки</strong> и фиксируем следующий шаг. Отпустить без денег, даты и шага — главная ошибка профессии.</p>
+      </div>
+
+      <div class="quiz">
+        <h3>Проверьте себя</h3>
+        <div class="q">Клиент отказался от 15 000 ₽. Что дальше?</div>
+        <div class="opts" id="quiz1">
+          <button class="opt" onclick="quiz(this,false)">Зафиксировать дату оплаты</button>
+          <button class="opt" onclick="quiz(this,true)">Предложить частичную фиксацию 2 000 ₽</button>
+          <button class="opt" onclick="quiz(this,false)">Отпустить подумать до завтра</button>
+        </div>
+        <div class="q">Дата оплаты фиксируется…</div>
+        <div class="opts" id="quiz2">
+          <button class="opt" onclick="quiz(this,false)">На любой удобный месяц</button>
+          <button class="opt" onclick="quiz(this,true)">Не дальше 14 дней, под день дохода клиента</button>
+        </div>
+      </div>
+
+      <div class="timer-note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
+        Кнопка станет активной после мини-квиза
+      </div>
+      <button class="btn primary mt8" id="lessonDone" disabled onclick="lessonComplete()">Урок изучен</button>
+    </section>
+
+    <!-- ════ S4 ТЕСТ ════ -->
+    <section class="screen" id="s4">
+      <button class="back" onclick="go('s2')">← Дорожная карта</button>
+
+      <div id="testIntro">
+        <h1 style="font-size:26px">Тест на допуск</h1>
+        <p class="sub">20 вопросов · 45 секунд на вопрос · без возврата назад. Проходной балл — 80%. Осталось попыток сегодня: 2.</p>
+        <div class="card mt18" style="padding:16px">
+          <div class="weak" style="margin:0">
+            <div class="w"><span>О компании и продуктах</span><b>6 вопросов</b></div>
+            <div class="w"><span>Лестница денег</span><b>5 вопросов</b></div>
+            <div class="w"><span>Скрипт и передача от охотника</span><b>4 вопроса</b></div>
+            <div class="w" style="border:none"><span>Статусы, ошибки, гарантия</span><b>5 вопросов</b></div>
+          </div>
+        </div>
+        <button class="btn primary mt18" onclick="startTest()">Начать тест</button>
+      </div>
+
+      <div id="testQ" style="display:none">
+        <div class="test-top">
+          <span class="qcount">Вопрос 7 из 20 · Лестница денег</span>
+          <div class="tring">
+            <svg width="46" height="46"><circle class="bgc" cx="23" cy="23" r="19"/><circle class="fgc" id="ring" cx="23" cy="23" r="19" stroke-dasharray="119.4" stroke-dashoffset="0"/></svg>
+            <b id="tleft">45</b>
+          </div>
+        </div>
+        <div class="question">У клиента нет даже 2 000 ₽ на частичную фиксацию. Что фиксирует клоузер?</div>
+        <div class="opts mt14">
+          <button class="opt" onclick="answerTest(this,false)">Отказ — клиент неплатёжеспособен</button>
+          <button class="opt" onclick="answerTest(this,true)">Точную дату оплаты в пределах 14 дней</button>
+          <button class="opt" onclick="answerTest(this,false)">Перезвон через месяц</button>
+          <button class="opt" onclick="answerTest(this,false)">Заявку на бесплатную консультацию</button>
+        </div>
+        <p class="note">В прототипе один вопрос — дальше сразу результат</p>
+      </div>
+
+      <div id="testRes" style="display:none">
+        <div class="card result-hero">
+          <div class="score">85%</div>
+          <p class="sub" style="margin-top:6px"><b style="color:var(--ok)">Тест сдан</b> · 17 из 20</p>
+        </div>
+        <div class="card mt14" style="padding:16px">
+          <b style="font-size:14px">Слабые места — стоит повторить:</b>
+          <div class="weak">
+            <div class="w"><span>Гарантия по договору</span><b style="color:var(--red)">1 из 2</b></div>
+            <div class="w" style="border:none"><span>Различение БФЛ / РДГ</span><b style="color:var(--red)">2 из 3</b></div>
+          </div>
+        </div>
+        <button class="btn primary mt18" onclick="go('s5')">К AI-симуляциям →</button>
+      </div>
+    </section>
+
+    <!-- ════ S5 СИМУЛЯЦИИ ════ -->
+    <section class="screen" id="s5">
+      <button class="back" onclick="go('s2')">← Дорожная карта</button>
+      <h1 style="font-size:26px">AI-симуляции</h1>
+      <p class="sub">Сценарий — это ТИП клиента (например «Боюсь коллекторов»), а не один разговор: <b>клиент каждый раз новый</b> — имя, возраст, долг, характер и возражения меняются. Поэтому одну «Боюсь коллекторов» можно тренировать десятки раз, и заучить нельзя.</p>
+
+      <div class="card" style="margin-top:14px;padding:15px 16px;background:linear-gradient(135deg,#fff,var(--gold-soft));border:1px solid #f0ddb9">
+        <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><span>🔥 Тренировок в этом месяце: 28 / 50</span><span style="margin-left:auto;font-size:12px;font-weight:700;background:var(--ok);color:#fff;padding:3px 9px;border-radius:99px">🏅 бейдж за 30 — почти!</span></div>
+        <div style="height:9px;background:var(--line);border-radius:99px;margin-top:10px;overflow:hidden"><i style="display:block;height:100%;width:56%;background:linear-gradient(90deg,var(--gold-deep),var(--red));border-radius:99px"></i></div>
+        <div style="font-size:12px;color:#6e5424;margin-top:7px">50 тренировок за месяц — обязательно для прохождения испытательного. Бейдж за 30 уже близко.</div>
+      </div>
+
+      <button class="btn train mt14" style="font-size:15px;padding:16px" onclick="trainThis('твоё слабое место')">🎯 Быстрая тренировка — один тап</button>
+      <p class="note" style="margin-top:7px">Система сама подберёт сценарий (твоё слабое место или новый клиент). Для ежедневной разминки и объёма — не нужно ничего выбирать.</p>
+
+      <div class="sim-section">Зачётные сценарии</div>
+      <p class="sim-sub">5 типов, которые нужно сдать (4 из 5 OK). Клиент каждый раз новый.</p>
+
+      <div class="card sim-card" onclick="go('s6')">
+        <div class="sim-num">1</div>
+        <div class="sim-info"><div class="t">«Дорого» <span class="prod bfl">БФЛ</span><span class="sim-var">12 вариантов</span></div><div class="d">сейчас: Тамара, 49 — «я за год сама отдам»</div></div>
+        <span class="badge now">начать</span>
+      </div>
+      <div class="card sim-card">
+        <div class="sim-num">2</div>
+        <div class="sim-info"><div class="t">«Нет денег» <span class="prod rdg">РДГ</span><span class="sim-var">9 вариантов</span></div><div class="d">сейчас: Галина, 52 — «на карте триста рублей»</div></div>
+      </div>
+      <div class="card sim-card">
+        <div class="sim-num">3</div>
+        <div class="sim-info"><div class="t">«Надо с женой обсудить» <span class="prod rdg">РДГ</span><span class="sim-var">8 вариантов</span></div><div class="d">сейчас: Дмитрий, 45 — жена не знает про долги</div></div>
+      </div>
+      <div class="card sim-card">
+        <div class="sim-num">4</div>
+        <div class="sim-info"><div class="t">«Боюсь банкротства» <span class="prod bfl">БФЛ</span><span class="sim-var">10 вариантов</span></div><div class="d">сейчас: Светлана, 44 — «это же клеймо на всю жизнь»</div></div>
+      </div>
+      <div class="card sim-card">
+        <div class="sim-num">5</div>
+        <div class="sim-info"><div class="t">«Готов, но не сейчас» <span class="prod bfl">любой</span><span class="sim-var">7 вариантов</span></div><div class="d">сейчас: Олег, 38 — «давайте с аванса 25-го»</div></div>
+      </div>
+
+      <div class="sim-section">Тренировочные сценарии</div>
+      <p class="sim-sub">Не в зачёт — для практики. Список растёт из реальных звонков.</p>
+
+      <div class="card sim-card">
+        <div class="sim-num" style="background:var(--gold-soft);color:#9a7424">6</div>
+        <div class="sim-info"><div class="t">«Я предприниматель» <span class="prod rdg">РДГ</span></div><div class="d">новый клиент каждый раз · пройдено 2</div></div>
+        <span class="badge train">тренировка</span>
+      </div>
+      <div class="card sim-card">
+        <div class="sim-num" style="background:var(--gold-soft);color:#9a7424">7</div>
+        <div class="sim-info"><div class="t">«Боюсь коллекторов» <span class="prod rdg">РДГ</span></div><div class="d">новый клиент каждый раз · пройдено 5</div></div>
+        <span class="badge train">тренировка</span>
+      </div>
+      <div class="card sim-card">
+        <div class="sim-num" style="background:var(--gold-soft);color:#9a7424">8</div>
+        <div class="sim-info"><div class="t">«На звонке муж/родственник» <span class="prod bfl">БФЛ</span></div><div class="d">новый клиент каждый раз · пройдено 1</div></div>
+        <span class="badge train">тренировка</span>
+      </div>
+      <div class="card sim-card" style="opacity:.6">
+        <div class="sim-num" style="background:var(--line);color:var(--grey)">9</div>
+        <div class="sim-info"><div class="t">«У меня хороший доход» <span class="prod bfl">БФЛ</span></div><div class="d">появится из новых звонков</div></div>
+        <span class="badge soon">скоро</span>
+      </div>
+
+      <div class="lib-note">
+        <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
+        <div>Чем больше реальных звонков загружаем — тем больше сценариев и тем точнее AI-клиент и оценка. Библиотека пополняется по мере работы сервиса.</div>
+      </div>
+
+      <span class="rubric-link">Как оценивается разговор — открыть рубрику</span>
+    </section>
+
+    <!-- ════ S6 СИМУЛЯЦИЯ ════ -->
+    <section class="screen" id="s6" style="position:relative">
+      <button class="back" onclick="go('s5')">← Сценарии</button>
+      <span class="sim-timer" id="simTimer">10:00</span>
+
+      <!-- карточка лида -->
+      <div id="handoffWrap">
+        <div class="handoff">
+          <div class="hh"><span>Передача от охотника</span><span class="countdown" id="cd">0:30</span></div>
+          <div class="hb">
+            <div class="row"><span class="k">Клиент</span><span class="v"><b>Тамара, 49</b> · Нижневартовск</span></div>
+            <div class="row"><span class="k">Долг</span><span class="v">740 000 ₽ · 2 кредита, 3 карты, 1 МФО</span></div>
+            <div class="row"><span class="k">Ситуация</span><span class="v">карта арестована приставами, работает сменами</span></div>
+            <div class="row"><span class="k">Гипотеза</span><span class="v">БФЛ — судебное банкротство</span></div>
+            <div class="quote">Охотнику сказала: «Платить больше не могу, но и банкротиться за такие деньги — вы с ума сошли»</div>
+          </div>
+        </div>
+        <button class="btn primary mt14" onclick="startCall()">Принять звонок</button>
+      </div>
+
+      <!-- диалог -->
+      <div id="callWrap" style="display:none">
+        <div class="dialog" id="dlg">
+          <div class="msg client">Алло, да, мне сказали, вы по моим долгам перезвоните…</div>
+        </div>
+        <div class="talkbar">
+          <span class="state-chip" id="chip">ваша очередь</span>
+          <button class="ptt" id="ptt"><svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 7 7.93V22h2v-3.07A8 8 0 0 0 20 11h-2z"/></svg></button>
+          <span class="ptt-hint">зажмите и говорите · отпустите, когда закончили</span>
+          <div class="simtools">
+            <button class="btn gold" onclick="sendLink()">Отправить ссылку на оплату</button>
+            <button class="btn ghost" onclick="finishSim()">Завершить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- самооценка перед вердиктом -->
+      <div id="selfWrap" style="display:none">
+        <div class="card self-card">
+          <h2>Сначала оцени себя</h2>
+          <p class="sub" style="margin-top:2px">До разбора AI. Это не влияет на допуск — так разбор запомнится лучше.</p>
+          <div class="selfq">
+            <div class="q">Прошёл лестницу денег (99 000 → 15 000 → 2 000 → дата)?</div>
+            <div class="self-opts" data-q="ladder">
+              <button onclick="selfPick(this)">Да</button>
+              <button onclick="selfPick(this)">Частично</button>
+              <button onclick="selfPick(this)">Нет</button>
+            </div>
+          </div>
+          <div class="selfq">
+            <div class="q">Зафиксировал следующий шаг (дата / счёт / созвон)?</div>
+            <div class="self-opts" data-q="next">
+              <button onclick="selfPick(this)">Да</button>
+              <button onclick="selfPick(this)">Не уверен</button>
+              <button onclick="selfPick(this)">Нет</button>
+            </div>
+          </div>
+          <div class="selfq">
+            <div class="q">Дал клиенту высказаться, не давил монологом?</div>
+            <div class="self-opts" data-q="delivery">
+              <button onclick="selfPick(this)">Да</button>
+              <button onclick="selfPick(this)">Местами</button>
+              <button onclick="selfPick(this)">Нет</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn primary mt18" id="selfSubmit" disabled onclick="submitSelf()">Показать разбор AI</button>
+      </div>
+
+      <!-- оценка -->
+      <div id="judgeWrap" style="display:none;text-align:center;padding:48px 10px">
+        <div class="sim-num" style="margin:0 auto;width:64px;height:64px;font-size:30px;border-radius:50%">⏳</div>
+        <h2 class="mt18">AI готовит разбор</h2>
+        <p class="sub">Обычно 1–2 минуты. Можно закрыть экран — пришлём уведомление.</p>
+        <button class="btn primary mt22" onclick="go('s7')">Показать результат (прототип)</button>
+      </div>
+    </section>
+
+    <!-- ════ S7 РЕЗУЛЬТАТ ════ -->
+    <section class="screen" id="s7">
+      <button class="back" onclick="go('s5')">← Сценарии</button>
+      <div class="verdict">
+        <span class="vbadge fix">⚠ Нужно исправить</span>
+        <p class="sub" style="margin-top:12px">Сценарий «Дорого» · зачётная попытка · 8:42</p>
+        <div class="trend" style="justify-content:center">
+          <span class="att"><span class="vb cr">✕</span>попытка 1</span>
+          <span class="arr">→</span>
+          <span class="att cur"><span class="vb fx">!</span>попытка 2 · сейчас</span>
+          <span style="color:var(--ok);font-weight:700">↑ растёшь</span>
+        </div>
+      </div>
+
+      <div class="self-vs">
+        <h3>Ты думал · что увидел AI</h3>
+        <div class="vsrow"><span class="lbl">Лестница денег</span><span class="tag match">ты «частично» · AI согласен</span></div>
+        <div class="vsrow"><span class="lbl">Следующий шаг</span><span class="tag match">ты «да» · AI «да» ✓</span></div>
+        <div class="vsrow"><span class="lbl">Частичка 2 000 ₽</span><span class="tag miss">ты не заметил · AI: пропущена</span></div>
+      </div>
+
+      <div class="card mt14" style="padding:6px 16px">
+        <div class="crit-row">
+          <div class="cdot g">✓</div>
+          <div style="flex:1">
+            <div class="t">Лестница: 99 000 → 15 000 предложены верно</div>
+            <div class="quote"><span class="tc">2:14</span>«Тамара, тогда смотрите: можно не разово, а рассрочкой — первый платёж пятнадцать тысяч, и мы уже сегодня начинаем»</div>
+          </div>
+        </div>
+        <div class="crit-row">
+          <div class="cdot y">!</div>
+          <div style="flex:1">
+            <div class="t">Не предложена частичка 2 000 ₽</div>
+            <div class="quote"><span class="tc">6:55</span>«Ну хорошо, подумайте до завтра, я наберу вас…»</div>
+            <div class="rec"><b>КАК НАДО:</b> после отказа от 15 000 ₽ — «давайте зафиксируем условия за 2 000 ₽, это бронь тарифа, а не платёж за услугу».</div>
+            <button class="train-mini" onclick="trainThis('частичку 2 000 ₽')"><svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4z"/></svg>Потренировать это</button>
+          </div>
+        </div>
+        <div class="crit-row">
+          <div class="cdot g">✓</div>
+          <div style="flex:1">
+            <div class="t">Следующий шаг зафиксирован</div>
+            <div class="quote"><span class="tc">8:10</span>«Завтра в 12:00 созваниваемся, я подготовлю расчёт под вашу зарплату 10-го числа»</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-note mt18" style="background:var(--red-soft);border-color:#efdadb;color:#5a4040">
+        <svg viewBox="0 0 24 24" stroke="#b43e41"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4z"/><path d="M19 11a7 7 0 0 1-14 0"/></svg>
+        <div>Сначала потренируйся 2–3 раза на этом месте, потом иди в зачёт. Сильные клоузеры делают 8+ прогонов перед сдачей — объём решает.</div>
+      </div>
+      <button class="btn train mt8" onclick="trainThis('частичку 2 000 ₽')">🎯 Потренировать слабое место</button>
+      <button class="btn primary mt8" onclick="go('s6')">Пересдать сценарий в зачёт</button>
+      <button class="btn ghost mt8" onclick="go('s8')">Не согласен с оценкой</button>
+      <p class="note">Цитаты кликабельны — проигрывается аудио реплики</p>
+    </section>
+
+    <!-- ════ S8 МОИ ОШИБКИ ════ -->
+    <section class="screen" id="s8">
+      <h1 style="font-size:26px">Мои ошибки</h1>
+      <p class="sub">Не просто список — тренажёр. Жми «Потренировать это» и сразу отрабатывай слабое место.</p>
+      <div class="card err-item">
+        <div class="t">Не предлагаю частичку 2 000 ₽</div>
+        <div class="m">2 раза · «Дорого», «Нет денег» · последний — сегодня</div>
+        <button class="train-mini" onclick="trainThis('частичку 2 000 ₽')"><svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4z"/></svg>Потренировать это</button>
+      </div>
+      <div class="card err-item">
+        <div class="t">Отпускаю «подумать» без отработки причины</div>
+        <div class="m">1 раз · «Дорого» · нужно минимум 2 отработки</div>
+        <button class="train-mini" onclick="trainThis('отработку «я подумаю»')"><svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4z"/></svg>Потренировать это</button>
+      </div>
+      <div class="card err-item" style="opacity:.6">
+        <div class="t">✓ Исправлено: не проговаривал договор при дате</div>
+        <div class="m">закрыто пересдачей 12.06</div>
+        <div class="trend"><span class="att"><span class="vb fx">!</span>11.06</span><span class="arr">→</span><span class="att cur"><span class="vb ok">✓</span>12.06</span></div>
+      </div>
+    </section>
+
+    <!-- ════ S9 МОИ УСЛОВИЯ ════ -->
+    <section class="screen" id="s9">
+      <button class="back" onclick="go('s2')">← Дорожная карта</button>
+      <h1 style="font-size:26px">Мои условия</h1>
+      <p class="sub">Справка всегда под рукой. Это не урок — сюда можно заглядывать в любой момент.</p>
+
+      <div class="card terms-sec">
+        <h3>График</h3>
+        <p>5/2 по ТК РФ. Смены по графику: начало в <b>9:00</b> или в <b>12:00</b>. Час на обед.</p>
+      </div>
+      <div class="card terms-sec">
+        <h3>Испытательный срок</h3>
+        <p><b>1 месяц.</b> Чтобы пройти, нужно выполнить два условия:</p>
+        <ul>
+          <li><b>30% конверсия</b> за месяц (продажи / взятые в работу лиды);</li>
+          <li><b>50 тренировок</b> в симуляторе за месяц (засчитываются полноценные, с разбором).</li>
+        </ul>
+        <p style="margin-top:8px;color:#555">50 — это посильно: ежедневная разминка даёт ~22 в месяц, остальное добираешь дриллами после звонков. На пути — бейдж за 30 тренировок.</p>
+      </div>
+      <div class="card terms-sec">
+        <h3>Сколько ты зарабатываешь</h3>
+        <p style="margin-bottom:6px"><b>Доход = оклад + бонус за каждую продажу + % с выручки.</b></p>
+        <ul>
+          <li><b>Оклад:</b> 40 000 ₽.</li>
+          <li><b>За каждую продажу</b> (ставка растёт с числом продаж за месяц): до 12 — без бонуса; 12–19 → 3 000 ₽/шт; 20–24 → 4 000; 25–29 → 5 000; 30–34 → 6 000; 35+ → 6 500 ₽ за продажу.</li>
+          <li><b>С выручки:</b> 4% с поступлений по договорам за месяц (если поступления от 250 000 ₽). VIP входит в выручку.</li>
+        </ul>
+        <p style="margin:10px 0 4px"><b>Пример</b> (зависит от продаж и поступлений за месяц):</p>
+        <ul>
+          <li>Слабый — 8 продаж, поступления ~800 000 ₽: ≈ <b>72 000 ₽</b> (40 000 оклад + 4%)</li>
+          <li>Средний — 18 продаж, поступления ~2 000 000 ₽: ≈ <b>174 000 ₽</b></li>
+          <li>Сильный — 30 продаж, поступления ~4 000 000 ₽: ≈ <b>380 000 ₽</b></li>
+        </ul>
+      </div>
+      <div class="card terms-sec">
+        <h3>Когда продажа засчитывается</h3>
+        <p>Продажа оплачивается <b>только после подписания клиентом декларации</b>. Нет декларации — продажа не засчитана.</p>
+        <p style="margin-top:8px">Если клиент ушёл в расторжение по вине клоузера (по заключению ОКК): премия за эту продажу не начисляется и переменная часть месяца уменьшается на 5 000 ₽. <b>Удержание — только из премии, оклад не трогаем.</b></p>
+      </div>
+      <div class="card terms-sec">
+        <h3>Правила игры</h3>
+        <p>Выше уровень допуска → горячее лиды → больше денег. Слил готового клиента без ссылки или отпустил без следующего шага — разбор с руководителем и пауза на новые лиды.</p>
+      </div>
+      <p class="note">Цифры дохода — реальные (решение 22). Жёлтым — то, что ещё уточняем (график, оклад, испытательный).</p>
+    </section>
+
+  </main>
+  </div><!-- /.appcol -->
+
+  <nav class="tabs">
+    <button class="on" data-s="s2" onclick="tab(this)"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>Путь</button>
+    <button data-s="s5" onclick="tab(this)"><svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4"/></svg>Симулятор</button>
+    <button data-s="s8" onclick="tab(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Ошибки</button>
+    <button data-s="s9" onclick="tab(this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Условия</button>
+  </nav>
+</div>
+
+<script>
+  /* ── навигация ── */
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('nav.tabs button, .side-nav .navbtn').forEach(b=>b.classList.toggle('on', b.dataset.s===id));
+    window.scrollTo({top:0});
+    const mainEl=document.querySelector('main'); if(mainEl) mainEl.scrollTop=0;
+    if(id==='s6') resetSim();
+  }
+  function tab(btn){ go(btn.dataset.s); }
+
+  /* ── мини-квиз урока ── */
+  let quizDone = new Set();
+  function quiz(btn, right){
+    const group = btn.parentElement;
+    if(group.dataset.locked) return;
+    group.dataset.locked = 1;
+    btn.classList.add(right ? 'right' : 'wrong');
+    if(!right){ group.querySelectorAll('.opt').forEach(o=>{ if(o.onclick.toString().includes('true')) o.classList.add('right'); }); }
+    quizDone.add(group.id);
+    if(quizDone.size >= 2) document.getElementById('lessonDone').disabled = false;
+  }
+  function lessonComplete(){
+    document.getElementById('pbar').style.width = '40%';
+    go('s2');
+  }
+
+  /* ── тест ── */
+  let tInt;
+  function startTest(){
+    document.getElementById('testIntro').style.display='none';
+    document.getElementById('testQ').style.display='block';
+    let left = 45; const ring = document.getElementById('ring'), lbl = document.getElementById('tleft');
+    clearInterval(tInt);
+    tInt = setInterval(()=>{ left--; lbl.textContent=left;
+      ring.style.strokeDashoffset = 119.4 * (1 - left/45);
+      if(left<=10) ring.style.stroke = '#B43E41';
+      if(left<=0){ clearInterval(tInt); showRes(); }
+    },1000);
+  }
+  function answerTest(btn, right){
+    clearInterval(tInt);
+    btn.classList.add(right?'right':'wrong');
+    setTimeout(showRes, 650);
+  }
+  function showRes(){
+    document.getElementById('testQ').style.display='none';
+    document.getElementById('testRes').style.display='block';
+  }
+
+  /* ── симуляция ── */
+  let cdInt, simInt, simSec = 600, focusSkill = null;
+  function resetSim(){
+    clearInterval(cdInt); clearInterval(simInt); simSec = 600; replyIdx = 0;
+    document.getElementById('handoffWrap').style.display='block';
+    document.getElementById('callWrap').style.display='none';
+    document.getElementById('selfWrap').style.display='none';
+    document.getElementById('judgeWrap').style.display='none';
+    document.getElementById('simTimer').textContent='10:00';
+    // сброс самооценки
+    selfAnswers = {};
+    document.querySelectorAll('.self-opts button').forEach(b=>b.classList.remove('sel'));
+    document.getElementById('selfSubmit').disabled = true;
+    // баннер целевой тренировки
+    const old = document.getElementById('focusBanner'); if(old) old.remove();
+    if(focusSkill){
+      const hw = document.getElementById('handoffWrap');
+      hw.insertAdjacentHTML('afterbegin','<div id="focusBanner" style="display:flex;gap:9px;align-items:center;padding:12px 14px;border-radius:12px;background:#1C1C1C;color:#fff;font-size:13px;font-weight:600;margin-bottom:12px">🎯 Тренировка без зачёта: '+focusSkill+'<span style="margin-left:auto;font-weight:500;color:#bbb">не влияет на допуск</span></div>');
+      focusSkill = null;   // одноразовый баннер
+    }
+    const d = document.getElementById('dlg');
+    d.innerHTML = '<div class="msg client">Алло, да, мне сказали, вы по моим долгам перезвоните…</div>';
+    let c = 30; const cd = document.getElementById('cd');
+    cd.textContent = '0:30';
+    cdInt = setInterval(()=>{ c--; cd.textContent = '0:'+String(c).padStart(2,'0'); if(c<=0){ clearInterval(cdInt); startCall(); } },1000);
+  }
+  function startCall(){
+    clearInterval(cdInt);
+    document.getElementById('handoffWrap').style.display='none';
+    document.getElementById('callWrap').style.display='block';
+    simInt = setInterval(()=>{ simSec--;
+      document.getElementById('simTimer').textContent = Math.floor(simSec/60)+':'+String(simSec%60).padStart(2,'0');
+      if(simSec<=0) finishSim();
+    },1000);
+  }
+  const clientReplies = [
+    'Девяносто девять тысяч?! Вы серьёзно? Да я за год сама всё раздам потихоньку…',
+    'Рассрочка… ну не знаю. А пятнадцать тысяч — это прям сейчас надо?',
+    'Ладно, в этом есть смысл. А две тысячи — это за что вообще?',
+    'Хорошо… а давайте тогда после смены, я подумаю и наберу вас сама.'
+  ];
+  let replyIdx = 0;
+  const ptt = document.getElementById('ptt'), chip = document.getElementById('chip');
+  function pttDown(e){ e.preventDefault(); ptt.classList.add('rec'); chip.textContent='вы говорите…'; }
+  function pttUp(e){
+    e.preventDefault();
+    if(!ptt.classList.contains('rec')) return;
+    ptt.classList.remove('rec');
+    const d = document.getElementById('dlg');
+    d.insertAdjacentHTML('beforeend','<div class="msg me">🎙 ваша реплика (в проде — распознанный текст)</div>');
+    chip.innerHTML='клиент думает<i>…</i>'; chip.classList.add('think');
+    setTimeout(()=>{
+      chip.classList.remove('think'); chip.textContent='ваша очередь';
+      d.insertAdjacentHTML('beforeend','<div class="msg client">'+clientReplies[Math.min(replyIdx++, clientReplies.length-1)]+'</div>');
+      d.lastElementChild.scrollIntoView({behavior:'smooth',block:'end'});
+    }, 1700);
+    d.lastElementChild.scrollIntoView({behavior:'smooth',block:'end'});
+  }
+  ptt.addEventListener('mousedown',pttDown); ptt.addEventListener('mouseup',pttUp); ptt.addEventListener('mouseleave',pttUp);
+  ptt.addEventListener('touchstart',pttDown,{passive:false}); ptt.addEventListener('touchend',pttUp);
+  function sendLink(){
+    document.getElementById('dlg').insertAdjacentHTML('beforeend','<div class="msg event">→ Ссылка на оплату отправлена · попадёт в разбор</div>');
+  }
+  function finishSim(){
+    clearInterval(simInt);
+    document.getElementById('callWrap').style.display='none';
+    document.getElementById('selfWrap').style.display='block';   // сначала самооценка
+    window.scrollTo({top:0}); const m=document.querySelector('main'); if(m) m.scrollTop=0;
+  }
+
+  /* ── самооценка перед вердиктом ── */
+  let selfAnswers = {};
+  function selfPick(btn){
+    const group = btn.parentElement;
+    group.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+    selfAnswers[group.dataset.q] = btn.textContent;
+    if(Object.keys(selfAnswers).length >= 3) document.getElementById('selfSubmit').disabled = false;
+  }
+  function submitSelf(){
+    document.getElementById('selfWrap').style.display='none';
+    document.getElementById('judgeWrap').style.display='block';
+  }
+
+  /* ── целевая тренировка («Потренировать это») ── */
+  function trainThis(skill){
+    focusSkill = skill;
+    go('s6');   // resetSim() покажет баннер фокуса и запустит тренировочную сессию
+  }
+</script>
+</body>
+</html>
