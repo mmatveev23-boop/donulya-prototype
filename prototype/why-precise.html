@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДоНуля — Почему важно писать факты чётко</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+  :root{--red:#B43E41;--ink:#1C1C1C;--grey:#979797;--line:#ECECEC;--bg:#F6F4F1;--soft:#F6E7E7;--card:#fff;--mono:#FBF8F5;--green:#3a8a4a;--greenbg:#EAF5E9;--amber:#8a6d12;--amberbg:#FBF1DA}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Manrope',sans-serif;color:var(--ink);background:var(--bg);padding:30px 18px 60px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .crumb{font-size:12px;color:var(--grey)}.crumb a{color:var(--red);text-decoration:none}
+  .brandlogo{height:26px}
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:30px;margin:14px 0 6px}
+  .sub{color:#6b6b6b;font-size:14px;line-height:1.55;max-width:720px;margin-bottom:20px}
+  /* реплика звонка */
+  .call{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:8px}
+  .call .lbl{font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.04em;margin-bottom:9px}
+  .turn{font-size:14px;line-height:1.5;margin:5px 0}
+  .turn .who{font-weight:700}
+  .turn.cl .who{color:var(--grey)}
+  .turn.mgr .who{color:var(--red)}
+  .flag{display:inline-block;font-size:11px;font-weight:700;color:var(--red);background:var(--soft);border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:1px}
+  .same{text-align:center;font-size:12px;color:var(--grey);margin:14px 0 16px}
+  /* колонки до/после */
+  .cols{display:flex;gap:20px;align-items:stretch}
+  .col{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+  .col .bar{display:flex;align-items:center;gap:9px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:14px;font-weight:700}
+  .col.bad .bar{background:#FCF6EC}
+  .col.good .bar{background:#F0F7EF}
+  .col .bar .t2{font-weight:400;color:var(--grey);font-size:12px}
+  .body{padding:18px 20px;display:flex;flex-direction:column;gap:14px;height:100%}
+  .blk{}
+  .blk .k{font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+  .facts{font-family:var(--font-mono,monospace);font-size:12.5px;line-height:1.5;background:var(--mono);border:1px solid #EFE8E2;border-radius:10px;padding:10px 12px}
+  .facts .vague{color:#a08; color:var(--grey)}
+  .arrow{text-align:center;color:var(--grey);font-size:18px}
+  .verdict{border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
+  .verdict.miss{background:var(--amberbg);border:1px solid #f0ddb9}
+  .verdict.catch{background:var(--greenbg);border:1px solid #cfe6cd}
+  .verdict .vh{font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+  .verdict.miss .vh{color:#8a3a1a}
+  .verdict.catch .vh{color:var(--green)}
+  .sym{flex:none;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff}
+  .sym.x{background:var(--red)}.sym.v{background:var(--green)}
+  .quote{font-size:12px;color:#7a2f31;background:#fff;border-radius:8px;padding:7px 10px;margin-top:7px}
+  .conseq{font-size:12.5px;line-height:1.5;color:#555;margin-top:auto;padding-top:6px;border-top:1px dashed #e6e0da}
+  .conseq b{color:var(--ink)}
+  .take{margin-top:22px;display:flex;gap:12px;align-items:flex-start;background:var(--red);color:#fff;border-radius:16px;padding:16px 20px}
+  .take svg{flex:none;stroke:#fff;margin-top:1px}
+  .take p{font-size:14px;line-height:1.55}
+  .take b{font-weight:700}
+  @media(max-width:760px){.cols{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <img class="brandlogo" src="../assets/brand/logo.svg" alt="ДоНуля">
+    <div class="crumb"><a href="index.html">← к прототипу</a> · почему важно писать чётко · решение 35</div>
+  </div>
+
+  <h1>Чёткий факт → AI ловит ошибку</h1>
+  <p class="sub">Один и тот же реальный звонок. Разница — только в том, насколько точно написан урок. Если факт расплывчатый, у AI нет эталона — и враньё проходит. Если чёткий — AI ловит и сигналит РОПу.</p>
+
+  <div class="call">
+    <div class="lbl">Фрагмент звонка</div>
+    <div class="turn cl"><span class="who">Клиент:</span> А алименты тоже спишутся?</div>
+    <div class="turn mgr"><span class="who">Клоузер:</span> Конечно, всё спишется, не переживайте.<span class="flag">это неправда</span></div>
+  </div>
+  <div class="same">↓ как этот звонок оценит AI при разном уроке ↓</div>
+
+  <div class="cols">
+
+    <div class="col bad">
+      <div class="bar">Урок написан расплывчато <span class="t2">· как часто пишут</span></div>
+      <div class="body">
+        <div class="blk"><div class="k">Факт в уроке</div>
+          <div class="facts"><span class="vague">списываем долги клиента</span>   # без списка, что НЕ списывается</div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="verdict miss">
+          <div class="vh"><span class="sym x">×</span> AI пропустил</div>
+          У судьи нет эталона, что алименты НЕ списываются → критерий не сработал → <b>вердикт OK</b>. Враньё ушло клиенту.
+        </div>
+        <div class="conseq"><b>Последствие:</b> клиент введён в заблуждение → претензия «мне обещали» / срыв процедуры. РОП ничего не увидел.</div>
+      </div>
+    </div>
+
+    <div class="col good">
+      <div class="bar">Урок написан чётко <span class="t2">· как надо</span></div>
+      <div class="body">
+        <div class="blk"><div class="k">Факт в уроке</div>
+          <div class="facts">не_списывается: [<b>алименты</b>, вред здоровью, зарплата работникам, …]</div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="verdict catch">
+          <div class="vh"><span class="sym v">✓</span> AI поймал</div>
+          Судья сверил «всё спишется» про алименты с каноном → противоречие → <b>factual_accuracy: 1</b> → вердикт <b>fix_required</b> + флаг РОПу.
+          <div class="quote">«Конечно, всё спишется» — обещание списать несписываемое (алименты)</div>
+        </div>
+        <div class="conseq"><b>Последствие:</b> ошибку поймали сразу, стажёра поправили, клиент не введён в заблуждение.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="take">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg>
+    <p><b>Вывод:</b> AI настолько точен, насколько точен урок. Чёткий факт = AI ловит ошибки на реальных звонках. Расплывчатый факт = слепое пятно. <b>Поэтому в уроках пишите конкретно — особенно списки и цифры.</b></p>
+  </div>
+
+</div>
+</body>
+</html>
