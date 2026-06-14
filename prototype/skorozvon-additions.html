@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДоНуля — Что берём у Skorozvon, что режем (решение 37)</title>
+<style>
+  @font-face{font-family:'GuberniaTygra';src:url('../assets/brand/fonts/GuberniaTygra.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-SemiBold.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Manrope';src:url('../assets/brand/fonts/Manrope-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+  :root{--red:#B43E41;--ink:#1C1C1C;--grey:#979797;--line:#ECECEC;--bg:#F6F4F1;--soft:#F6E7E7;--card:#fff;--green:#3a8a4a;--greenbg:#EFF6ED;--greenline:#cfe6cd}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Manrope',sans-serif;color:var(--ink);background:var(--bg);padding:30px 18px 60px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .crumb{font-size:12px;color:var(--grey)}.crumb a{color:var(--red);text-decoration:none}
+  .brandlogo{height:26px}
+  h1{font-family:'GuberniaTygra',serif;font-weight:400;font-size:30px;margin:14px 0 6px}
+  .sub{color:#6b6b6b;font-size:14px;line-height:1.55;max-width:760px;margin-bottom:22px}
+  .sub b{color:var(--ink);font-weight:700}
+  .cols{display:flex;gap:20px;align-items:flex-start}
+  .col{flex:1;min-width:0}
+  .colttl{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;margin-bottom:12px}
+  .colttl .cnt{font-size:12px;font-weight:700;border-radius:99px;padding:3px 10px}
+  .keep .colttl{color:var(--green)} .keep .cnt{background:var(--greenbg);color:var(--green)}
+  .cut .colttl{color:var(--grey)} .cut .cnt{background:#EFEAE6;color:#888}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:11px;display:flex;gap:11px;align-items:flex-start}
+  .keep .item{border-left:3px solid var(--green)}
+  .cut .item{opacity:.92}
+  .mk{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;margin-top:1px}
+  .keep .mk{background:var(--green)} .cut .mk{background:#b9b3ac}
+  .it{flex:1;min-width:0}
+  .it .nm{font-size:14.5px;font-weight:700;line-height:1.25}
+  .cut .it .nm{color:#6e6a64}
+  .it .wy{font-size:12.5px;color:#8a857f;line-height:1.45;margin-top:3px}
+  .it .bd{display:inline-block;font-size:10.5px;font-weight:700;color:var(--red);background:var(--soft);border-radius:99px;padding:2px 9px;margin-top:7px}
+  .foot{margin-top:24px;display:flex;gap:13px;align-items:flex-start;background:var(--red);color:#fff;border-radius:16px;padding:16px 20px}
+  .foot svg{flex:none;stroke:#fff;margin-top:2px}
+  .foot p{font-size:14px;line-height:1.55}.foot b{font-weight:700}
+  @media(max-width:760px){.cols{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <img class="brandlogo" src="../assets/brand/logo.svg" alt="ДоНуля">
+    <div class="crumb"><a href="index.html">← к прототипу</a> · берём / режем · решение 37</div>
+  </div>
+
+  <h1>Что берём у Skorozvon, а что режем</h1>
+  <p class="sub">Мы не тренажёр с аналитикой, а система <b>допуска</b>. Берём только дёшево-и-полезное, остальное режем — городить нерабочее и перегружать первый релиз нельзя. Из 10 идей: <b>4 взяли, 6 отбросили.</b></p>
+
+  <div class="cols">
+
+    <div class="col keep">
+      <div class="colttl">Берём <span class="cnt">дёшево + полезно · 4</span></div>
+
+      <div class="item"><span class="mk">✓</span><div class="it">
+        <div class="nm">Карточки «Лучшая / Худшая компетенция»</div>
+        <div class="wy">min/max баллов, которые судья и так считает. Один взгляд «где силён/слаб». Ноль новой логики.</div>
+        <span class="bd">MVP2 · дашборд РОПа</span>
+      </div></div>
+
+      <div class="item"><span class="mk">✓</span><div class="it">
+        <div class="nm">Алерт «форма падает → разбери, пока не выгорел»</div>
+        <div class="wy">У нас уже есть «падение формы» (реш. 29) — нужно лишь показать тренд. Часть допуска, не аналитика.</div>
+        <span class="bd">MVP1–2 · дашборд РОПа</span>
+      </div></div>
+
+      <div class="item"><span class="mk">✓</span><div class="it">
+        <div class="nm">Критерий рубрики: название + описание примерами</div>
+        <div class="wy">Это не новая фича — это UX нашего редактируемого судьи (реш. 15), нашего же рва. Берём удачный формат.</div>
+        <span class="bd">MVP2 · редактор рубрики D5</span>
+      </div></div>
+
+      <div class="item"><span class="mk">✓</span><div class="it">
+        <div class="nm">Богатые возражения</div>
+        <div class="wy">Это контент, а не код — растёт из НАШИХ реальных звонков (реш. 24/31), не дженерик-список. Почти бесплатно.</div>
+        <span class="bd">по мере · библиотека сценариев</span>
+      </div></div>
+    </div>
+
+    <div class="col cut">
+      <div class="colttl">Режем <span class="cnt">не городим · 6</span></div>
+
+      <div class="item"><span class="mk">✕</span><div class="it">
+        <div class="nm">Радар навыков</div>
+        <div class="wy">Дублирует нашу таблицу «по этапам продаж» (реш. 30). Красиво, но информации сверх неё ноль.</div>
+      </div></div>
+
+      <div class="item"><span class="mk">✕</span><div class="it">
+        <div class="nm">Слайдер сложности персоны</div>
+        <div class="wy">У нас уже есть поле difficulty + рандомизация. Слайдер — UI-сахар.</div>
+      </div></div>
+
+      <div class="item"><span class="mk">✕</span><div class="it">
+        <div class="nm">Выгрузки в BI + ROI обучение→продажи</div>
+        <div class="wy">Мощно для продажи директору, но требует amoCRM (MVP3) и к допуску не относится. Держим как аргумент, не строим.</div>
+      </div></div>
+
+      <div class="item"><span class="mk">✕</span><div class="it">
+        <div class="nm">Паралингвистика (темп / паузы / голос)</div>
+        <div class="wy">Судья у нас текстовый (реш. 25). Аудио-анализ дорог и дёшево «не взлетит». Прокси no_monologue достаточно.</div>
+      </div></div>
+
+      <div class="item"><span class="mk">✕</span><div class="it">
+        <div class="nm">Лидерборд сотрудников</div>
+        <div class="wy">Против анти-Гудхарт (реш. 24/28). Берём только принцип «оценка без любимчиков», не денежный рейтинг.</div>
+      </div></div>
+
+      <div class="item"><span class="mk">✕</span><div class="it">
+        <div class="nm">Fine-tune / «обученные модели»</div>
+        <div class="wy">Против реш. 32: извлечение + редактируемая рубрика, не дообучение. Дешевле и под контролем.</div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6L8 13.8 2 9.4h7.6z"/></svg>
+    <p><b>MVP1 = узкий допуск:</b> 5 зачётных сценариев, gate 4/5 OK + 0 critical, прозрачная рубрика 0–5, единый судья + операционный минимум РОПа (застрял / ждёт решения / разминка / исключения). Релиз за 6–8 недель. Радары, графики, выгрузки, геймификация — <b>MVP2</b>, поверх работающего допуска. Это поле Skorozvon, не наш ров.</p>
+  </div>
+
+</div>
+</body>
+</html>
